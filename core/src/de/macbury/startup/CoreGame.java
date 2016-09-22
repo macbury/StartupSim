@@ -23,7 +23,7 @@ public class CoreGame extends ApplicationAdapter {
 
   @Override
 	public void create () {
-    VisUI.load();
+    
 	}
 
   @Override
