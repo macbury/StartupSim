@@ -1,0 +1,19 @@
+#https://github.com/jsjolund/GdxDemo3D/blob/e16b44a239d631ed15c0760e54ea04bc15f5f4b8/android/assets/btrees/dog.btree
+#https://github.com/libgdx/gdx-ai/wiki/Behavior-Trees#guards-as-sub-trees
+
+import bark:"de.macbury.startup.BarkTask"
+import goToSleep:"de.macbury.startup.RestTask"
+import iAmHungry?:"de.macbury.startup.IAmHungryTask"
+import eat:"de.macbury.startup.EatTask"
+
+subtree name:"canEat"
+  sequence
+    iAmHungry?
+
+root
+  dynamicGuardSelector
+    ($canEat) sequence
+      eat
+    sequence
+      bark
+      goToSleep sleepFor:30
