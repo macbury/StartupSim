@@ -37,7 +37,7 @@ public class DummyScreen extends AbstractScreen {
   }
 
   @Override
-  public void render() {
+  public void render(float d) {
 
   }
 

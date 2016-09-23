@@ -54,7 +54,7 @@ public class TestBehaviorScreen extends AbstractScreen {
   }
 
   @Override
-  public void render() {
+  public void render(float delta) {
     tree.step();
     john.hunger++;
     Gdx.gl.glClearColor(0, 0, 0, 1);

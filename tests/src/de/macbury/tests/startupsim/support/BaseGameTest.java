@@ -11,7 +11,7 @@ public abstract class BaseGameTest {
 
   @Before
   public void configureRPGGame() {
-    this.game = new CoreGame();
+    this.game = new CoreGame() {};
     game.create();
   }
 

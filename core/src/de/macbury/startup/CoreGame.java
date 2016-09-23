@@ -12,8 +12,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.kotcrab.vis.ui.VisUI;
 import de.macbury.startup.screens.ScreenManager;
+import de.macbury.startup.screens.TestBehaviorScreen;
 
-public class CoreGame extends ApplicationAdapter {
+public abstract class CoreGame extends ApplicationAdapter {
   private static final String TAG = "CoreGame";
   public final ScreenManager screens;
 
@@ -23,7 +24,7 @@ public class CoreGame extends ApplicationAdapter {
 
   @Override
 	public void create () {
-    
+
 	}
 
   @Override
