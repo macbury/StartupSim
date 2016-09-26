@@ -1,0 +1,12 @@
+{
+  Position: {
+    x: 0,
+    y: 0
+  },
+  CharsetAnimation: {
+    name: "charset:programmer.png"
+  },
+  Programmer: {
+    tree: "behavior:programmer.btree"
+  }
+}

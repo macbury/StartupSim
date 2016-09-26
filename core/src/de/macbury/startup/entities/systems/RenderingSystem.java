@@ -8,9 +8,11 @@ import com.badlogic.ashley.systems.SortedIteratingSystem;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
+import de.macbury.startup.entities.components.CharsetAnimationComponent;
 import de.macbury.startup.entities.components.PositionComponent;
+import de.macbury.startup.entities.helpers.Components;
+import de.macbury.startup.graphics.Direction;
 
-import java.util.Comparator;
 
 /**
  * System renders all sprites into sprite batch. SpriteBatch is managed by this system
@@ -36,7 +38,12 @@ public class RenderingSystem extends IteratingSystem implements Disposable {
 
   @Override
   protected void processEntity(Entity entity, float deltaTime) {
-
+    PositionComponent position = Components.Position.get(entity);
+    if (Components.CharsetAnimation.has(entity)) {
+      CharsetAnimationComponent charsetAnimation = Components.CharsetAnimation.get(entity);
+      charsetAnimation.stateTime += deltaTime;
+      spriteBatch.draw(charsetAnimation.getKeyFrame(Direction.Down), position.x, position.y, 1f, 1f);
+    }
   }
 
 

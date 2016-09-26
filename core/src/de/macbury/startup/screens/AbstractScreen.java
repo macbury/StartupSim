@@ -2,6 +2,7 @@ package de.macbury.startup.screens;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.utils.Disposable;
+import de.macbury.startup.CoreGame;
 
 /** <p>
  * Represents one of many application screens, such as a main menu, a settings menu, the game screen and so on.
@@ -11,9 +12,18 @@ import com.badlogic.gdx.utils.Disposable;
  * </p>*/
 public abstract class AbstractScreen implements Disposable {
   private boolean created;
+  protected CoreGame game;
 
   public AbstractScreen() {
     super();
+  }
+
+  public void link(CoreGame game) {
+    this.game = game;
+  }
+
+  public void unlink() {
+    game = null;
   }
 
 

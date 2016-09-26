@@ -1,0 +1,16 @@
+import bark:"de.macbury.startup.entities.behaviors.BarkTask"
+import goToSleep:"de.macbury.startup.entities.behaviors.RestTask"
+import iAmHungry?:"de.macbury.startup.entities.behaviors.IAmHungryTask"
+import eat:"de.macbury.startup.entities.behaviors.EatTask"
+
+subtree name:"canEat"
+  sequence
+    iAmHungry?
+
+root
+  dynamicGuardSelector
+    ($canEat) sequence
+      eat
+    sequence
+      bark
+      goToSleep sleepFor:30

@@ -52,7 +52,7 @@ public class ScreenManager implements Disposable {
     } else {
       Gdx.app.debug(TAG, "Hide " + screen.toString());
     }
-    //screen.unlink();
+    screen.unlink();
   }
 
   /**
@@ -94,12 +94,12 @@ public class ScreenManager implements Disposable {
       throw new Exception("Passed null screen");
     }
 
-    //nextScreen.link(game);
+    nextScreen.link(game);
     screenStack.push(nextScreen);
     if (!nextScreen.isCreated()) {
       Gdx.app.debug(TAG, "Preload and create screen " + nextScreen.toString());
       nextScreen.preload();
-      //assets.finishLoading(); //TODO show loading screen
+      game.assets.finishLoading();
       nextScreen.create();
       nextScreen.setCreated(true);
     } else {

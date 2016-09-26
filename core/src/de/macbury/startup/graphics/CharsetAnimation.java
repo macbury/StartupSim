@@ -18,7 +18,6 @@ public class CharsetAnimation implements Disposable {
   private ObjectMap<Direction, Animation> animations;
 
   public CharsetAnimation() {
-    animations = new ObjectMap<Direction, Animation>();
   }
 
   public CharsetAnimation(Texture texture) {
@@ -30,7 +29,8 @@ public class CharsetAnimation implements Disposable {
    * Build animations from texture
    * @param texture
    */
-  private void build(Texture texture) {
+  protected void build(Texture texture) {
+    animations = new ObjectMap<Direction, Animation>();
     TextureRegion[][] frames = TextureRegion.split(texture, CHARSET_FRAME_SIZE, CHARSET_FRAME_SIZE);
     for (Direction direction : Direction.values()) {
       Array<TextureRegion> walkFrames = new Array<TextureRegion>(NUMBER_OF_WALK_FRAMES);
@@ -40,6 +40,16 @@ public class CharsetAnimation implements Disposable {
       Animation animation = new Animation(WALK_FRAME_TIME, walkFrames, Animation.PlayMode.LOOP);
       animations.put(direction, animation);
     }
+  }
+
+  /**
+   * Copy animations from other {@link CharsetAnimation}
+   * @param otherAnimation
+   * @return
+   */
+  public CharsetAnimation set(CharsetAnimation otherAnimation) {
+    this.animations = new ObjectMap<Direction, Animation>(otherAnimation.animations);
+    return this;
   }
 
   /**
