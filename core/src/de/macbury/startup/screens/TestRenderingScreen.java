@@ -22,13 +22,10 @@ import de.macbury.startup.graphics.Direction;
  * Created by macbury on 22.09.16.
  */
 public class TestRenderingScreen extends AbstractScreen {
-  private Texture programmerTexture;
   private SpriteBatch spriteBatch;
   private OrthographicCamera camera;
-  private float stateTime;
   private EntityManager entities;
   private Viewport worldViewport;
-  private CharsetAnimation charsetAnimation;
 
   public TestRenderingScreen() {
     super();
@@ -37,13 +34,14 @@ public class TestRenderingScreen extends AbstractScreen {
   @Override
   public void preload() {
     game.assets.load("entity:programmer.json", EntityBlueprint.class);
-    //this.programmerTexture = new Texture("programmer.png");
-    //charsetAnimation       = new CharsetAnimation(programmerTexture);
+    game.assets.load("entity:computer.json", EntityBlueprint.class);
+    game.assets.load("entity:coffee-cup.json", EntityBlueprint.class);
+    game.assets.load("entity:sandwich.json", EntityBlueprint.class);
   }
 
   @Override
   public void create() {
-    this.entities    = new EntityManager();
+    this.entities    = new EntityManager(game);
     this.camera      = new OrthographicCamera();
     //TODO refactor this into builder or something else...
     entities.addSystem(new ProgrammerSystem());
@@ -52,20 +50,10 @@ public class TestRenderingScreen extends AbstractScreen {
     this.spriteBatch = new SpriteBatch();
     worldViewport    = new FillViewport(24, 24, camera);
 
-    EntityBlueprint blueprint = game.assets.get("entity:programmer.json");
-    blueprint.createAndAdd(entities);
-
-    /*Entity programmerEntity                             = entities.createEntity();
-    PositionComponent positionComponent                 = entities.createComponent(PositionComponent.class);
-    CharsetAnimationComponent charsetAnimationComponent = entities.createComponent(CharsetAnimationComponent.class);
-    charsetAnimationComponent.set(charsetAnimation);
-
-    programmerEntity.add(positionComponent);
-    programmerEntity.add(charsetAnimationComponent);
-
-    entities.addEntity(programmerEntity);
-
-    positionComponent.set(0,0);*/
+    entities.create("entity:programmer.json");
+    entities.create("entity:computer.json");
+    entities.create("entity:sandwich.json");
+    entities.create("entity:coffee-cup.json");
   }
 
   @Override
@@ -107,7 +95,6 @@ public class TestRenderingScreen extends AbstractScreen {
 
   @Override
   public void dispose() {
-    //programmerTexture.dispose();
     entities.dispose();
   }
 }

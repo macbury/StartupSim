@@ -1,0 +1,10 @@
+{
+  Position: {
+    x: 5,
+    y: 2
+  },
+  Sprite: {
+    atlas: "atlas:interior.atlas",
+    texture: "computer"
+  }
+}

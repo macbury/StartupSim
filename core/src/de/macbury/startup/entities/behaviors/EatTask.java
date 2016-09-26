@@ -13,13 +13,26 @@ import de.macbury.startup.entities.helpers.Components;
  */
 public class EatTask extends LeafTask<Entity> {
   private static final String TAG = "EatTask";
+  private int accumulator = 0;
+
+  @Override
+  public void start() {
+    super.start();
+    accumulator = 0;
+  }
 
   @Override
   public Status execute() {
-    Gdx.app.log(TAG, "Munch munch im eating");
+
     ProgrammerComponent programmer = Components.Programmer.get(getObject());
-    programmer.hunger = 0;
-    return Status.SUCCEEDED;
+    if (accumulator > 50) {
+      Gdx.app.log(TAG, "Munch munch im eating");
+      programmer.hunger = 0;
+      return Status.SUCCEEDED;
+    } else {
+      accumulator++;
+      return Status.RUNNING;
+    }
   }
 
   @Override

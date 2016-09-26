@@ -18,5 +18,6 @@ public class ProgrammerSystem extends IteratingSystem {
   protected void processEntity(Entity entity, float deltaTime) {
     ProgrammerComponent programmerComponent = Components.Programmer.get(entity);
     programmerComponent.tree.step();
+    programmerComponent.hunger++;
   }
 }

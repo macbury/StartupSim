@@ -25,6 +25,7 @@ public class EngineFileHandleResolver implements FileHandleResolver {
     putMapping("world", "worlds/");
     putMapping("charset", "charsets/");
     putMapping("behavior", "behaviors/");
+    putMapping("atlas", "atlases/");
   }
 
   private String applyMapping(String path) {

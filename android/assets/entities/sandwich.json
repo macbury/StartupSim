@@ -1,0 +1,10 @@
+{
+  Position: {
+    x: -4,
+    y: 3
+  },
+  Sprite: {
+    atlas: "atlas:interior.atlas",
+    texture: "sandwich"
+  }
+}

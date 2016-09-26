@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.startup.entities.components.CharsetAnimationComponent;
 import de.macbury.startup.entities.components.PositionComponent;
+import de.macbury.startup.entities.components.SpriteComponent;
 import de.macbury.startup.entities.helpers.Components;
 import de.macbury.startup.graphics.Direction;
 
@@ -43,6 +44,9 @@ public class RenderingSystem extends IteratingSystem implements Disposable {
       CharsetAnimationComponent charsetAnimation = Components.CharsetAnimation.get(entity);
       charsetAnimation.stateTime += deltaTime;
       spriteBatch.draw(charsetAnimation.getKeyFrame(Direction.Down), position.x, position.y, 1f, 1f);
+    } else if (Components.Sprite.has(entity)) {
+      SpriteComponent spriteComponent = Components.Sprite.get(entity);
+      spriteBatch.draw(spriteComponent.region, position.x, position.y, 1f, 1f);
     }
   }
 
