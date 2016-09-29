@@ -1,4 +1,4 @@
-package de.macbury.startup.screens;
+package de.macbury.startup.screens.test;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.BehaviorTree;
@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import de.macbury.startup.Programmer;
+import de.macbury.startup.screens.AbstractScreen;
 
 /**
  * Created by macbury on 22.09.16.

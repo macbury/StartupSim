@@ -1,6 +1,6 @@
 package de.macbury.startup;
 
-import de.macbury.startup.screens.TestRenderingScreen;
+import de.macbury.startup.screens.test.TestRenderingScreen;
 
 /**
  * Created by macbury on 26.09.16.

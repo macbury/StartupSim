@@ -2,19 +2,14 @@ package de.macbury.startup;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.btree.BehaviorTree;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibrary;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeParser;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.kotcrab.vis.ui.VisUI;
 import de.macbury.startup.assets.Assets;
 import de.macbury.startup.assets.EngineFileHandleResolver;
+import de.macbury.startup.messages.MessagesManager;
 import de.macbury.startup.screens.ScreenManager;
-import de.macbury.startup.screens.TestBehaviorScreen;
 
 public abstract class CoreGame extends ApplicationAdapter {
   private static final String TAG = "CoreGame";
@@ -35,7 +30,10 @@ public abstract class CoreGame extends ApplicationAdapter {
    */
   public final BehaviorTreeLibrary behaviorTreeLibrary;
 
+  public final MessagesManager messages;
+
   public CoreGame() {
+    this.messages = new MessagesManager();
     this.resolver = new EngineFileHandleResolver();
     this.screens  = new ScreenManager(this);
     this.assets   = new Assets(resolver, this);

@@ -1,8 +1,5 @@
 {
-  Position: {
-    x: 0,
-    y: 0
-  },
+  Position: {},
   CharsetAnimation: {
     name: "charset:programmer.png"
   },

@@ -1,4 +1,4 @@
-package de.macbury.startup.screens;
+package de.macbury.startup.screens.test;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
@@ -17,6 +17,7 @@ import de.macbury.startup.entities.systems.ProgrammerSystem;
 import de.macbury.startup.entities.systems.RenderingSystem;
 import de.macbury.startup.graphics.CharsetAnimation;
 import de.macbury.startup.graphics.Direction;
+import de.macbury.startup.screens.AbstractScreen;
 
 /**
  * Created by macbury on 22.09.16.
@@ -43,17 +44,18 @@ public class TestRenderingScreen extends AbstractScreen {
   public void create() {
     this.entities    = new EntityManager(game);
     this.camera      = new OrthographicCamera();
+    worldViewport    = new FillViewport(34, 34, camera);
     //TODO refactor this into builder or something else...
     entities.addSystem(new ProgrammerSystem());
     entities.addSystem(new RenderingSystem(camera));
 
     this.spriteBatch = new SpriteBatch();
-    worldViewport    = new FillViewport(24, 24, camera);
 
-    entities.create("entity:programmer.json");
-    entities.create("entity:computer.json");
-    entities.create("entity:sandwich.json");
-    entities.create("entity:coffee-cup.json");
+
+    entities.spawn("entity:programmer.json", 0, 0);
+    entities.spawn("entity:computer.json", 0, 1);
+    entities.spawn("entity:sandwich.json", 0, 2);
+    entities.spawn("entity:coffee-cup.json", 0, 3);
   }
 
   @Override
