@@ -13,12 +13,14 @@ import de.macbury.startup.map.Tile;
  */
 public class MapGraph implements IndexedGraph<TileNode>, Disposable {
   private final Array<TileNode> nodes;
+  private long lastChange;
   private MapData mapData;
 
 
   public MapGraph(MapData mapData) {
     this.mapData = mapData;
     this.nodes   = new Array<TileNode>(mapData.getColumns() * mapData.getRows());
+    this.lastChange = -1;
   }
 
   @Override
@@ -42,6 +44,16 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
   @Override
   public Array<Connection<TileNode>> getConnections(TileNode fromNode) {
     return fromNode.connections;
+  }
+
+  /**
+   * Check if {@link MapData} did change and rebuild graph
+   */
+  public void rebuildIfNeed() {
+    if (lastChange != mapData.getChanges()) {
+      lastChange = mapData.getChanges();
+      rebuild();
+    }
   }
 
   /**
@@ -93,5 +105,4 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
     nodes.clear();
     mapData = null;
   }
-
 }

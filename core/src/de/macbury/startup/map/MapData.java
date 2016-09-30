@@ -13,12 +13,16 @@ public class MapData implements Disposable {
    * Did map data change
    */
   private boolean dirty;
+  /**
+   * Number of changes in this map
+   */
+  private long changes;
 
   public MapData(int columns, int rows) {
     this.tiles   = new Tile[columns][rows];
     this.columns = columns;
     this.rows    = rows;
-    dirty = true;
+    changes      = 0;
   }
 
   public int getRows() {
@@ -35,22 +39,28 @@ public class MapData implements Disposable {
 
   public void remove(int x, int y) {
     tiles[x][y] = null;
+    changes++;
   }
 
   public Tile build(int x, int y) {
     Tile tile   = new Tile(x,y);
     tiles[x][y] = tile;
+    changes++;
     return tile;
   }
 
   public void set(int x, int y, Tile value) {
     tiles[x][y] = value;
-    dirty = true;
+    changes++;
   }
 
   @Override
   public void dispose() {
-
+    for (int x = 0; x < columns; x++) {
+      for (int y = 0; y < rows; y++) {
+        remove(x,y);
+      }
+    }
   }
 
   public boolean isNotEmpty(int x, int y) {
@@ -59,5 +69,13 @@ public class MapData implements Disposable {
 
   public boolean isEmpty(int x, int y) {
     return tiles[x][y] == null;
+  }
+
+  /**
+   * Number of changes in MapData
+   * @return
+   */
+  public long getChanges() {
+    return changes;
   }
 }

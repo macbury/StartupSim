@@ -1,12 +1,8 @@
 package de.macbury.startup.screens.test;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.pfa.PathFinderQueue;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
-import com.badlogic.gdx.ai.sched.LoadBalancingScheduler;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -15,10 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FillViewport;
-import de.macbury.startup.entities.systems.PathFindingSystem;
 import de.macbury.startup.level.LevelEnv;
-import de.macbury.startup.map.MapData;
-import de.macbury.startup.map.pfa.MapGraph;
 import de.macbury.startup.map.pfa.SmoothedGraphPath;
 import de.macbury.startup.map.pfa.TileDistanceHeuristic;
 import de.macbury.startup.map.pfa.TileNode;
@@ -26,21 +19,14 @@ import de.macbury.startup.messages.MessageType;
 import de.macbury.startup.screens.AbstractScreen;
 
 /**
- * Created by macbury on 29.09.16.
+ * Created by macbury on 30.09.16.
  */
-public class TestAStarScreen extends AbstractScreen implements GestureDetector.GestureListener {
-  private MapData mapData;
+public class TestPathFindingScreen extends AbstractScreen implements GestureDetector.GestureListener {
+  private LevelEnv level;
   private OrthographicCamera camera;
   private FillViewport worldViewport;
   private ShapeRenderer shapeRenderer;
-  private SmoothedGraphPath path;
-  private MapGraph mapGraph;
-  private IndexedAStarPathFinder<TileNode> pathFinder;
-  private PathFinderQueue<TileNode> queue;
-  private LoadBalancingScheduler scheduler;
   private PathFinderRequest<TileNode> request;
-  private FPSLogger fpsLogger;
-  private LevelEnv level;
 
   @Override
   public void preload() {
@@ -50,33 +36,6 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
   @Override
   public void create() {
     this.level     = new LevelEnv(game);
-    level.entities.addSystem(new PathFindingSystem(mapData, game.messages));
-    this.fpsLogger = new FPSLogger();
-    this.mapData   = new MapData(30,30);
-
-    for (int x = 1; x < 29; x++) {
-      for (int y = 1; y < 29; y++) {
-        mapData.build(x, y);
-      }
-    }
-
-
-    for (int i = 0; i < 20; i++) {
-      mapData.remove(i,4);
-    }
-
-
-    this.mapGraph = new MapGraph(mapData);
-    mapGraph.rebuild();
-
-    this.pathFinder = new IndexedAStarPathFinder<TileNode>(mapGraph, true);
-    this.queue      = new PathFinderQueue<TileNode>(pathFinder);
-
-    game.messages.addListener(queue, MessageType.RequestPathFinding);
-
-    this.scheduler    = new LoadBalancingScheduler(60);
-    scheduler.addWithAutomaticPhasing(queue, 2);
-
     this.camera       = new OrthographicCamera();
     worldViewport     = new FillViewport(64, 64, camera);
 
@@ -105,18 +64,17 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
 
   @Override
   public void render(float delta) {
-    level.entities.update(delta);
-    fpsLogger.log();
-    scheduler.run(50000);
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    level.update(delta);
+
     camera.update();
     shapeRenderer.setProjectionMatrix(camera.combined);
 
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line); {
-      for (int x = 0; x < mapData.getColumns(); x++) {
-        for (int y = 0; y < mapData.getRows(); y++) {
-          if (mapData.isEmpty(x,y)) {
+      for (int x = 0; x < level.mapData.getColumns(); x++) {
+        for (int y = 0; y < level.mapData.getRows(); y++) {
+          if (level.mapData.isEmpty(x,y)) {
             shapeRenderer.setColor(Color.RED);
             shapeRenderer.rect(x,y, 1, 1);
           }
@@ -142,7 +100,6 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
       shapeRenderer.setColor(Color.YELLOW);
       shapeRenderer.rect(touchPos.x, touchPos.y, 1,1);
     } shapeRenderer.end();
-
   }
 
   @Override
@@ -157,7 +114,7 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
 
   @Override
   public void dispose() {
-
+    level.dispose();
   }
 
   @Override
@@ -172,16 +129,13 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
     worldViewport.unproject(touchPos);
     touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
 
-    TileNode startNode  = mapGraph.getNode(1,1);
-    TileNode targetNode = mapGraph.getNode((int)touchPos.x, (int)touchPos.y);
+    //TileNode startNode  = mapGraph.getNode(1,1);
+    //TileNode targetNode = mapGraph.getNode((int)touchPos.x, (int)touchPos.y);
 
-    this.request    = new PathFinderRequest<TileNode>(startNode, targetNode, new TileDistanceHeuristic(), new SmoothedGraphPath());
+    this.request    = new PathFinderRequest<TileNode>(null, null, new TileDistanceHeuristic(), new SmoothedGraphPath());
     game.messages.dispatchMessage(MessageType.RequestPathFinding, request);
-
     return true;
   }
-
-
 
   @Override
   public boolean longPress(float x, float y) {
@@ -197,7 +151,7 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
   public boolean pan(float x, float y, float deltaX, float deltaY) {
     camera.position.sub(deltaX/100,-deltaY/100, 0);
     camera.update();
-    return true;
+    return false;
   }
 
   @Override
