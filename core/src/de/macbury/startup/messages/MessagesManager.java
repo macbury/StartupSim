@@ -9,6 +9,8 @@ import com.badlogic.gdx.ai.msg.Telegraph;
 public class MessagesManager extends MessageDispatcher {
 
   public void dispatchMessage(MessageType type, Object payload) {
+    if (!type.verifyPayload(payload))
+      throw new InvalidPayloadError(payload, type);
     dispatchMessage(type.ordinal(), payload);
   }
 

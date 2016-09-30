@@ -3,9 +3,13 @@ package de.macbury.startup.screens.test;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.pfa.DefaultGraphPath;
+import com.badlogic.gdx.ai.pfa.PathFinderQueue;
+import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.ai.pfa.SmoothableGraphPath;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedAStarPathFinder;
+import com.badlogic.gdx.ai.sched.LoadBalancingScheduler;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -20,6 +24,7 @@ import de.macbury.startup.map.Tile;
 import de.macbury.startup.map.pfa.SmoothedGraphPath;
 import de.macbury.startup.map.pfa.TileDistanceHeuristic;
 import de.macbury.startup.map.pfa.TileNode;
+import de.macbury.startup.messages.MessageType;
 import de.macbury.startup.screens.AbstractScreen;
 
 /**
@@ -33,6 +38,10 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
   private SmoothedGraphPath path;
   private MapGraph mapGraph;
   private IndexedAStarPathFinder<TileNode> pathFinder;
+  private PathFinderQueue<TileNode> queue;
+  private LoadBalancingScheduler scheduler;
+  private PathFinderRequest<TileNode> request;
+  private FPSLogger fpsLogger;
 
   @Override
   public void preload() {
@@ -41,6 +50,7 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
 
   @Override
   public void create() {
+    this.fpsLogger = new FPSLogger();
     this.mapData = new MapData(30,30);
 
     for (int x = 1; x < 29; x++) {
@@ -58,10 +68,13 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
     this.mapGraph = new MapGraph(mapData);
     mapGraph.rebuild();
 
-    this.path = new SmoothedGraphPath();
-
     this.pathFinder = new IndexedAStarPathFinder<TileNode>(mapGraph, true);
+    this.queue      = new PathFinderQueue<TileNode>(pathFinder);
 
+    game.messages.addListener(queue, MessageType.RequestPathFinding);
+
+    this.scheduler    = new LoadBalancingScheduler(60);
+    scheduler.addWithAutomaticPhasing(queue, 2);
 
     this.camera       = new OrthographicCamera();
     worldViewport     = new FillViewport(64, 64, camera);
@@ -91,6 +104,8 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
 
   @Override
   public void render(float delta) {
+    fpsLogger.log();
+    scheduler.run(50000);
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     camera.update();
@@ -106,22 +121,26 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
         }
       }
 
-      for (int i = 1; i < path.getCount(); i++) {
-        TileNode startNode = path.get(i-1);
-        TileNode targetNode = path.get(i);
+      if (request != null && request.status == PathFinderRequest.SEARCH_FINALIZED) {
+        for (int i = 1; i < request.resultPath.getCount(); i++) {
+          TileNode startNode = request.resultPath.get(i-1);
+          TileNode targetNode = request.resultPath.get(i);
 
-        shapeRenderer.setColor(Color.FOREST);
-        shapeRenderer.line(
-                startNode.x + 0.5f,
-                startNode.y + 0.5f,
-                targetNode.x + 0.5f,
-                targetNode.y + 0.5f
-        );
+          shapeRenderer.setColor(Color.FOREST);
+          shapeRenderer.line(
+                  startNode.x + 0.5f,
+                  startNode.y + 0.5f,
+                  targetNode.x + 0.5f,
+                  targetNode.y + 0.5f
+          );
+        }
       }
+
 
       shapeRenderer.setColor(Color.YELLOW);
       shapeRenderer.rect(touchPos.x, touchPos.y, 1,1);
     } shapeRenderer.end();
+
   }
 
   @Override
@@ -150,20 +169,17 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
     touchPos.set(x,y,0);
     worldViewport.unproject(touchPos);
     touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
-    findPath((int)touchPos.x, (int)touchPos.y);
 
-    return false;
+    TileNode startNode  = mapGraph.getNode(1,1);
+    TileNode targetNode = mapGraph.getNode((int)touchPos.x, (int)touchPos.y);
+
+    this.request    = new PathFinderRequest<TileNode>(startNode, targetNode, new TileDistanceHeuristic(), new SmoothedGraphPath());
+    game.messages.dispatchMessage(MessageType.RequestPathFinding, request);
+
+    return true;
   }
 
-  private void findPath(int x, int y) {
-    path.clear();
-    pathFinder.searchNodePath(
-            mapGraph.getNode(x, y),
-            mapGraph.getNode(1, 1),
-            new TileDistanceHeuristic(),
-            path
-    );
-  }
+
 
   @Override
   public boolean longPress(float x, float y) {

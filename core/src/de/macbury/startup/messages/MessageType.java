@@ -1,12 +1,17 @@
 package de.macbury.startup.messages;
 
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /**
  * All messages that are sended in system
  */
 public enum MessageType {
+  /**
+   * Search path in background
+   */
+  RequestPathFinding(PathFinderRequest.class),
   Test;
 
   /**

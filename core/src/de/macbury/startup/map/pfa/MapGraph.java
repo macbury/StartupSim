@@ -9,18 +9,12 @@ import de.macbury.startup.map.MapData;
 import de.macbury.startup.map.Tile;
 
 /**
- * This graph represents all passable connections
+ * This graph represents graph of all {@link Tile} and its connections
  */
 public class MapGraph implements IndexedGraph<TileNode>, Disposable {
   private final Array<TileNode> nodes;
   private MapData mapData;
 
-  private Pool<TileNode> nodePool = new Pool<TileNode>() {
-    @Override
-    protected TileNode newObject() {
-      return new TileNode();
-    }
-  };
 
   public MapGraph(MapData mapData) {
     this.mapData = mapData;
@@ -54,7 +48,6 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
    * Rebuild graph connections and nodes
    */
   public void rebuild() {
-    nodePool.freeAll(nodes);
     nodes.clear();
 
     /**
@@ -62,11 +55,7 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
      */
     for (int x = 0; x < mapData.getColumns(); x++) {
       for (int y = 0; y < mapData.getRows(); y++) {
-        TileNode node = nodePool.obtain();
-        node.x     = x;
-        node.y     = y;
-        node.index = getIndex(x,y);
-        node.tile  = mapData.get(x,y);
+        TileNode node = new TileNode(x, y, getIndex(x,y), mapData.get(x,y));
         nodes.add(node);
       }
     }
@@ -101,7 +90,6 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
 
   @Override
   public void dispose() {
-    nodePool.freeAll(nodes);
     nodes.clear();
     mapData = null;
   }

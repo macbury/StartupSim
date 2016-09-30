@@ -64,6 +64,7 @@ public abstract class CoreGame extends ApplicationAdapter {
 
   @Override
 	public void render () {
+    messages.update();
     screens.tick(Gdx.graphics.getDeltaTime());
 	}
 	
