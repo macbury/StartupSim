@@ -1,6 +1,5 @@
 package de.macbury.startup.entities.blueprint;
 
-
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.utils.Array;
@@ -13,10 +12,12 @@ import de.macbury.startup.entities.EntityManager;
  * {@link ComponentBlueprint}
  */
 public class EntityBlueprint implements Disposable {
+  private EntityBlueprint parent;
   private Array<ComponentBlueprint> componentBlueprints;
 
-  public EntityBlueprint(Array<ComponentBlueprint> componentBlueprints) {
+  public EntityBlueprint(EntityBlueprint parent, Array<ComponentBlueprint> componentBlueprints) {
     this.componentBlueprints = new Array<ComponentBlueprint>(componentBlueprints);
+    this.parent              = parent;
   }
 
   /**
@@ -26,13 +27,28 @@ public class EntityBlueprint implements Disposable {
    */
   public Entity create(EntityManager entityManager) {
     Entity entity = entityManager.createEntity();
-    for (ComponentBlueprint blueprint : componentBlueprints) {
+
+    if (parent != null) {
+      applyBlueprintsTo(entityManager, entity, parent.componentBlueprints);
+    }
+    applyBlueprintsTo(entityManager, entity, componentBlueprints);
+
+    return entity;
+  }
+
+  /**
+   * Set blueprints components on entity
+   * @param entityManager
+   * @param entity
+   * @param blueprints
+   */
+  private void applyBlueprintsTo(EntityManager entityManager, Entity entity, Array<ComponentBlueprint> blueprints) {
+    for (ComponentBlueprint blueprint : blueprints) {
       Component component  = entityManager.createComponent(blueprint.componentKlass);
       ((Pool.Poolable)component).reset();
       blueprint.applyTo(component, entity);
       entity.add(component);
     }
-    return entity;
   }
 
   /**
@@ -52,5 +68,6 @@ public class EntityBlueprint implements Disposable {
       blueprint.dispose();
     }
     componentBlueprints.clear();
+    parent = null;
   }
 }

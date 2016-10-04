@@ -2,6 +2,7 @@ package de.macbury.startup.messages;
 
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
 /**
@@ -12,7 +13,7 @@ public enum MessageType {
    * Search path in background
    */
   RequestPathFinding(PathFinderRequest.class),
-  Test;
+  Test, FindPath;
 
   /**
    * What type of payload is sended in Telegram
@@ -20,7 +21,7 @@ public enum MessageType {
   private final Class payloadType;
 
   MessageType() {
-    payloadType = Object.class;
+    payloadType = null;
   }
 
   MessageType(Class payloadType) {
@@ -33,7 +34,7 @@ public enum MessageType {
    * @return
    */
   public boolean verifyPayload(Object payload) {
-    return payloadType.isInstance(payload);
+    return payloadType == null || payloadType.isInstance(payload);
   }
 
   /**
@@ -52,4 +53,5 @@ public enum MessageType {
   public Class getPayloadType() {
     return payloadType;
   }
+
 }

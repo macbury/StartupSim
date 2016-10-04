@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Pool;
-import de.macbury.startup.Programmer;
 import de.macbury.startup.assets.Assets;
 import de.macbury.startup.entities.blueprint.ComponentBlueprint;
 

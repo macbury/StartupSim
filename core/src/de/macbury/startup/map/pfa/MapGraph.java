@@ -49,10 +49,13 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
   /**
    * Check if {@link MapData} did change and rebuild graph
    */
-  public void rebuildIfNeed() {
+  public boolean rebuildIfNeed() {
     if (lastChange != mapData.getChanges()) {
       lastChange = mapData.getChanges();
       rebuild();
+      return true;
+    } else {
+      return false;
     }
   }
 

@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.btree.annotation.TaskAttribute;
-import de.macbury.startup.Programmer;
 
 /**
  * Created by macbury on 19.09.16.
@@ -20,6 +19,7 @@ public class RestTask extends LeafTask<Entity> {
   public void start() {
     super.start();
     alpha = 0;
+    sleepFor = 5f + new Float(Math.random() * 10);
     Gdx.app.log(TAG, "Going to sleep: " + sleepFor);
   }
 

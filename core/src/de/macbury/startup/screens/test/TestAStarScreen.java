@@ -50,7 +50,7 @@ public class TestAStarScreen extends AbstractScreen implements GestureDetector.G
   @Override
   public void create() {
     this.level     = new LevelEnv(game);
-    level.entities.addSystem(new PathFindingSystem(mapData, game.messages));
+    //level.entities.addSystem(new PathFindingSystem(mapData, game.messages));
     this.fpsLogger = new FPSLogger();
     this.mapData   = new MapData(30,30);
 

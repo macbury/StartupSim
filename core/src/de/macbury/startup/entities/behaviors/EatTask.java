@@ -4,14 +4,14 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.btree.Task;
-import de.macbury.startup.Programmer;
+import com.badlogic.gdx.ai.msg.Telegram;
 import de.macbury.startup.entities.components.ProgrammerComponent;
 import de.macbury.startup.entities.helpers.Components;
 
 /**
  * Created by macbury on 21.09.16.
  */
-public class EatTask extends LeafTask<Entity> {
+public class EatTask extends EntityTask {
   private static final String TAG = "EatTask";
   private int accumulator = 0;
 
@@ -38,5 +38,10 @@ public class EatTask extends LeafTask<Entity> {
   @Override
   protected Task<Entity> copyTo(Task<Entity> task) {
     return new EatTask();
+  }
+
+  @Override
+  public boolean handleMessage(Telegram msg) {
+    return false;
   }
 }

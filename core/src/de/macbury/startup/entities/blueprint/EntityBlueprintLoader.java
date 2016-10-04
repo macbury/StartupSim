@@ -14,9 +14,11 @@ import de.macbury.startup.assets.Assets;
  * Loads blueprint and all its dependencies
  */
 public class EntityBlueprintLoader extends SynchronousAssetLoader<EntityBlueprint, EntityBlueprintLoader.BlueprintParameter> {
+  private final String PARENT_KEY = "$parent";
   private final JsonReader jsonReader;
   private final Json json;
   private Array<ComponentBlueprint> componentBlueprints;
+  private String parentName;
 
   public EntityBlueprintLoader(FileHandleResolver resolver) {
     super(resolver);
@@ -30,8 +32,16 @@ public class EntityBlueprintLoader extends SynchronousAssetLoader<EntityBlueprin
     for (ComponentBlueprint blueprint : componentBlueprints) {
       blueprint.assignDependencies((Assets)assetManager);
     }
-    EntityBlueprint entityBlueprint = new EntityBlueprint(componentBlueprints);
+    EntityBlueprint entityBlueprint = null;
+
+    if (parentName != null) {
+      EntityBlueprint parentBlueprint = assetManager.get(parentName);
+      entityBlueprint = new EntityBlueprint(parentBlueprint, componentBlueprints);
+    } else {
+      entityBlueprint = new EntityBlueprint(null, componentBlueprints);
+    }
     componentBlueprints.clear();
+
     return entityBlueprint;
   }
 
@@ -41,8 +51,15 @@ public class EntityBlueprintLoader extends SynchronousAssetLoader<EntityBlueprin
     this.componentBlueprints                      = new Array<ComponentBlueprint>();
     JsonValue blueprintRoot                       = jsonReader.parse(file);
     Json json                                     = new Json();
+
+    if (blueprintRoot.has(PARENT_KEY)) {
+      this.parentName = blueprintRoot.getString(PARENT_KEY);
+      blueprintRoot.remove(PARENT_KEY);
+    }
+
     for (JsonValue jsonBlueprint : blueprintRoot) {
       String componentSimpleNamePart = jsonBlueprint.name();
+
       try {
         Class<ComponentBlueprint> blueprintKlassToLoad = (Class<ComponentBlueprint>)Class.forName(getComponentKlassName(componentSimpleNamePart) + "$Blueprint");
         Class<Component> componentKlass                = (Class<Component>)Class.forName(getComponentKlassName(componentSimpleNamePart));
@@ -60,6 +77,10 @@ public class EntityBlueprintLoader extends SynchronousAssetLoader<EntityBlueprin
         throw new GdxRuntimeException(e);
       }
     }
+
+    if (parentName != null)
+      deps.add(new AssetDescriptor(parentName, EntityBlueprint.class));
+
     return deps;
   }
 

@@ -1,6 +1,7 @@
 package de.macbury.startup;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibrary;
 import com.badlogic.gdx.ai.btree.utils.BehaviorTreeLibraryManager;
@@ -11,7 +12,7 @@ import de.macbury.startup.assets.EngineFileHandleResolver;
 import de.macbury.startup.messages.MessagesManager;
 import de.macbury.startup.screens.ScreenManager;
 
-public abstract class CoreGame extends ApplicationAdapter {
+public abstract class CoreGame implements ApplicationListener {
   private static final String TAG = "CoreGame";
   /**
    * Manage in game screens

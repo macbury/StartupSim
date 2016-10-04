@@ -1,6 +1,8 @@
 package de.macbury.startup.screens.test;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -11,6 +13,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import de.macbury.startup.entities.blueprint.EntityBlueprint;
+import de.macbury.startup.entities.helpers.Components;
 import de.macbury.startup.level.LevelEnv;
 import de.macbury.startup.map.pfa.SmoothedGraphPath;
 import de.macbury.startup.map.pfa.TileDistanceHeuristic;
@@ -23,23 +27,23 @@ import de.macbury.startup.screens.AbstractScreen;
  */
 public class TestPathFindingScreen extends AbstractScreen implements GestureDetector.GestureListener {
   private LevelEnv level;
-  private OrthographicCamera camera;
   private FillViewport worldViewport;
   private ShapeRenderer shapeRenderer;
-  private PathFinderRequest<TileNode> request;
+  private Entity programmerEntity;
 
   @Override
   public void preload() {
-
+    game.assets.load("entity:programmer.json", EntityBlueprint.class);
   }
 
   @Override
   public void create() {
-    this.level     = new LevelEnv(game);
-    this.camera       = new OrthographicCamera();
-    worldViewport     = new FillViewport(64, 64, camera);
+    this.level        = new LevelEnv(game);
+    worldViewport     = new FillViewport(64, 64, level.camera);
 
     shapeRenderer     = new ShapeRenderer();
+
+    programmerEntity  = level.entities.spawn("entity:programmer.json", 2,2);
   }
 
   @Override
@@ -68,8 +72,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     level.update(delta);
 
-    camera.update();
-    shapeRenderer.setProjectionMatrix(camera.combined);
+    shapeRenderer.setProjectionMatrix(level.camera.combined);
 
     shapeRenderer.begin(ShapeRenderer.ShapeType.Line); {
       for (int x = 0; x < level.mapData.getColumns(); x++) {
@@ -81,10 +84,12 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
         }
       }
 
-      if (request != null && request.status == PathFinderRequest.SEARCH_FINALIZED) {
-        for (int i = 1; i < request.resultPath.getCount(); i++) {
-          TileNode startNode = request.resultPath.get(i-1);
-          TileNode targetNode = request.resultPath.get(i);
+      GraphPath<TileNode> path = Components.Movement.get(programmerEntity).getPath();
+
+      if (path != null) {
+        for (int i = 1; i < path.getCount(); i++) {
+          TileNode startNode = path.get(i-1);
+          TileNode targetNode = path.get(i);
 
           shapeRenderer.setColor(Color.FOREST);
           shapeRenderer.line(
@@ -129,11 +134,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     worldViewport.unproject(touchPos);
     touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
 
-    //TileNode startNode  = mapGraph.getNode(1,1);
-    //TileNode targetNode = mapGraph.getNode((int)touchPos.x, (int)touchPos.y);
-
-    this.request    = new PathFinderRequest<TileNode>(null, null, new TileDistanceHeuristic(), new SmoothedGraphPath());
-    game.messages.dispatchMessage(MessageType.RequestPathFinding, request);
+    Components.Movement.get(programmerEntity).target.set((int)touchPos.x, (int)touchPos.y);
     return true;
   }
 
@@ -149,8 +150,8 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
 
   @Override
   public boolean pan(float x, float y, float deltaX, float deltaY) {
-    camera.position.sub(deltaX/100,-deltaY/100, 0);
-    camera.update();
+    level.camera.position.sub(deltaX/100,-deltaY/100, 0);
+    level.camera.update();
     return false;
   }
 

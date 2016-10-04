@@ -3,13 +3,17 @@ import goToSleep:"de.macbury.startup.entities.behaviors.RestTask"
 import iAmHungry?:"de.macbury.startup.entities.behaviors.IAmHungryTask"
 import eat:"de.macbury.startup.entities.behaviors.EatTask"
 
-subtree name:"canEat"
-  sequence
-    iAmHungry?
+import haveTarget?:"de.macbury.startup.entities.behaviors.pf.HaveTargetTask"
+import findPath:"de.macbury.startup.entities.behaviors.pf.FindPathTask"
+import followPath:"de.macbury.startup.entities.behaviors.pf.FollowPathTask"
+
 
 root
   dynamicGuardSelector
-    ($canEat) sequence
+    (haveTarget?) sequence
+      findPath
+      followPath
+    (iAmHungry?) sequence
       eat
     sequence
       bark
