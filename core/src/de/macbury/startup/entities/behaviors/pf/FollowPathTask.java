@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.pfa.GraphPath;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import de.macbury.startup.entities.behaviors.EntityTask;
 import de.macbury.startup.entities.components.MovementComponent;
 import de.macbury.startup.entities.components.PositionComponent;
@@ -12,51 +14,56 @@ import de.macbury.startup.entities.helpers.Components;
 import de.macbury.startup.map.pfa.TileNode;
 
 /**
- * Created by macbury on 04.10.16.
+ * Follow path. If destination is reached then it returns Status.SUCCEEDED. If there is obstacle along way then task will be failed
  */
 public class FollowPathTask extends EntityTask {
 
   private static final String TAG = "FollowPathTask";
   private float alpha;
-  private float sleepFor;
-  private int currentIndex;
+
+  private final Vector2 startPosition = new Vector2();
+  private final Vector2 endPosition   = new Vector2();
+  private final Array<TileNode> path  = new Array<TileNode>();
 
   @Override
   public void start() {
-    super.start();
-    alpha = 0;
-    currentIndex = 0;
-    sleepFor = 1f + new Float(Math.random() * 3);
-    Gdx.app.log(TAG, "Following path for: " + sleepFor);
+    MovementComponent movementComponent = Components.Movement.get(getObject());
+    alpha = 2.0f;
+    for (TileNode node : movementComponent.getPath()) {
+      path.add(node);
+    }
+
+    Gdx.app.log(TAG, "Following path for");
   }
 
   @Override
   public void end() {
-    //Components.Position.get(getObject()).set(Components.Movement.get(getObject()).target);
-    Components.Movement.get(getObject()).reset();
+    path.clear();
     Gdx.app.log(TAG, "Finished");
   }
 
   @Override
   public Status execute() {
-    MovementComponent movementComponent = Components.Movement.get(getObject());
-    PositionComponent positionComponent = Components.Position.get(getObject());
+    PositionComponent position = Components.Position.get(getObject());
+    MovementComponent movement = Components.Movement.get(getObject());
 
-    GraphPath<TileNode> path = movementComponent.getPath();
-    alpha += Gdx.graphics.getDeltaTime();
-    if (currentIndex == path.getCount()) {
-      return Status.SUCCEEDED;
+    alpha += Gdx.graphics.getDeltaTime() * movement.speed;
+
+    if (alpha > 1.0f) {
+      if (path.size > 0) {
+        TileNode node = path.removeIndex(0);
+        startPosition.set(position);
+        endPosition.set(node.x, node.y);
+        alpha         = 0;
+      } else {
+        return Status.SUCCEEDED;
+      }
     }
-    if (alpha > 0.1f) {
-      alpha = 0f;
-      TileNode node = path.get(currentIndex);
-      positionComponent.set(node.x, node.y);
-      currentIndex++;
-    }
+
+    position.set(startPosition).lerp(endPosition, alpha);
+
     return Status.RUNNING;
   }
-
-
 
   @Override
   protected Task<Entity> copyTo(Task<Entity> task) {

@@ -1,7 +1,9 @@
 {
   LevelEnv: {},
   Position: {},
-  Movement: {},
+  Movement: {
+    speed: 10
+  },
   CharsetAnimation: {
     name: "charset:programmer.png"
   },
