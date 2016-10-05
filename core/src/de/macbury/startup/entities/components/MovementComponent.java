@@ -28,6 +28,8 @@ public class MovementComponent implements Component, Pool.Poolable {
     return path;
   }
 
+
+
   public static class Blueprint extends EmptyComponentBlueprint {
 
   }

@@ -1,7 +1,8 @@
-package de.macbury.startup.screens.test;
+package de.macbury.startup.desktop.test;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.graphics.Color;
@@ -12,7 +13,10 @@ import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.kotcrab.vis.ui.VisUI;
 import de.macbury.startup.entities.blueprint.EntityBlueprint;
 import de.macbury.startup.entities.helpers.Components;
 import de.macbury.startup.level.LevelEnv;
@@ -21,6 +25,7 @@ import de.macbury.startup.map.pfa.TileDistanceHeuristic;
 import de.macbury.startup.map.pfa.TileNode;
 import de.macbury.startup.messages.MessageType;
 import de.macbury.startup.screens.AbstractScreen;
+import io.piotrjastrzebski.bte.AIEditor;
 
 /**
  * Created by macbury on 30.09.16.
@@ -30,20 +35,33 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
   private FillViewport worldViewport;
   private ShapeRenderer shapeRenderer;
   private Entity programmerEntity;
+  private AIEditor aiEditor;
+  private Stage stage;
 
   @Override
   public void preload() {
+    VisUI.load();
     game.assets.load("entity:programmer.json", EntityBlueprint.class);
   }
 
   @Override
   public void create() {
+    this.aiEditor     = new AIEditor(VisUI.getSkin());
+    aiEditor.addDefaultTaskClasses();
+
+    stage = new Stage(new ScreenViewport());
+
     this.level        = new LevelEnv(game);
     worldViewport     = new FillViewport(64, 64, level.camera);
 
     shapeRenderer     = new ShapeRenderer();
 
     programmerEntity  = level.entities.spawn("entity:programmer.json", 2,2);
+
+    InputMultiplexer inputMultiplexer = new InputMultiplexer();
+    inputMultiplexer.addProcessor(stage);
+    inputMultiplexer.addProcessor(new GestureDetector(this));
+    Gdx.input.setInputProcessor(inputMultiplexer);
   }
 
   @Override
@@ -53,7 +71,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
 
   @Override
   public void show() {
-    Gdx.input.setInputProcessor(new GestureDetector(this));
+
   }
 
   @Override
