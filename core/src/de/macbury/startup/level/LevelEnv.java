@@ -38,6 +38,25 @@ public class LevelEnv implements Disposable {
       }
     }
 
+    for (int x = 31; x < 40; x++) {
+      for (int y = 1; y < 40; y++) {
+        mapData.build(x, y);
+      }
+    }
+    mapData.build(29, 20);
+    mapData.build(30, 20);
+    mapData.build(31, 20);
+
+    for (int x = 41; x < 45; x++) {
+      for (int y = 1; y < 40; y++) {
+        mapData.build(x, y);
+      }
+    }
+
+    mapData.build(39, 3);
+    mapData.build(40, 3);
+    mapData.build(41, 3);
+
     for (int i = 0; i < 20; i++) {
       mapData.remove(i,4);
     }

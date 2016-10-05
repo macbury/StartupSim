@@ -134,7 +134,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     worldViewport.unproject(touchPos);
     touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
 
-    Components.Movement.get(programmerEntity).target.set((int)touchPos.x, (int)touchPos.y);
+    Components.Position.get(programmerEntity).set((int)touchPos.x, (int)touchPos.y);
     return true;
   }
 

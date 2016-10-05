@@ -6,14 +6,14 @@ import eat:"de.macbury.startup.entities.behaviors.EatTask"
 import haveTarget?:"de.macbury.startup.entities.behaviors.pf.HaveTargetTask"
 import findPath:"de.macbury.startup.entities.behaviors.pf.FindPathTask"
 import followPath:"de.macbury.startup.entities.behaviors.pf.FollowPathTask"
-
+import findFood:"de.macbury.startup.entities.behaviors.FindFoodTask"
 
 root
   dynamicGuardSelector
-    (haveTarget?) sequence
+    (iAmHungry?) sequence
+      findFood
       findPath
       followPath
-    (iAmHungry?) sequence
       eat
     sequence
       bark
