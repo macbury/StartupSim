@@ -5,10 +5,7 @@ import com.badlogic.gdx.utils.Disposable;
 import de.macbury.startup.CoreGame;
 import de.macbury.startup.assets.Assets;
 import de.macbury.startup.entities.EntityManager;
-import de.macbury.startup.entities.systems.PathFindingSystem;
-import de.macbury.startup.entities.systems.ProgrammerSystem;
-import de.macbury.startup.entities.systems.RefLevelSystem;
-import de.macbury.startup.entities.systems.RenderingSystem;
+import de.macbury.startup.entities.systems.*;
 import de.macbury.startup.map.MapData;
 import de.macbury.startup.map.pfa.MapGraph;
 import de.macbury.startup.messages.MessagesManager;
@@ -64,6 +61,7 @@ public class LevelEnv implements Disposable {
     entities.addSystem(new RefLevelSystem(this));
     entities.addSystem(new ProgrammerSystem());
     entities.addSystem(new PathFindingSystem(mapGraph, mapData, game.messages));
+    entities.addSystem(new MovementSystem());
     entities.addSystem(new RenderingSystem(camera));
   }
 

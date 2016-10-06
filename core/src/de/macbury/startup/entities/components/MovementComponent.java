@@ -2,6 +2,7 @@ package de.macbury.startup.entities.components;
 
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.math.Vector2;
@@ -19,18 +20,69 @@ import de.macbury.startup.map.pfa.TileNode;
  */
 public class MovementComponent implements Component, Pool.Poolable {
   private static final float DEFAULT_SPEED = 10f;
-  public Vector2 target = new Vector2();
+  public Vector2 target = new Vector2();// TODO move this into separate component
   private GraphPath<TileNode> path;
   public float speed = DEFAULT_SPEED;
 
+  /**
+   * This variables are used for interpolating between two points
+   */
+  private float alpha;
+  private final Vector2 startPosition = new Vector2();
+  private final Vector2 endPosition = new Vector2();
+  private boolean finished;
+
   @Override
   public void reset() {
+    startPosition.setZero();
+    endPosition.setZero();
     target.setZero();
+    alpha = 0.0f;
+    finished = true;
     path = null;
     speed = DEFAULT_SPEED;
   }
 
+  /**
+   * Start interpolation between two points
+   * @param start
+   * @param finish
+   */
+  public void beginMovement(Vector2 start, Vector2 finish) {
+    alpha = 0.0f;
+    finished = false;
+    this.startPosition.set(start);
+    this.endPosition.set(finish);
+  }
+
+  /**
+   * Did interpolation between two points end?
+   * @return
+   */
+  public boolean isFinished() {
+    return finished;
+  }
+
+  /**
+   * Do movement and calculate new position
+   * @param deltaTime
+   * @param out
+   */
+  public void step(float deltaTime, Vector2 out) {
+    alpha += deltaTime * speed;
+    if (alpha > 1.0f) {
+      finished = true;
+      alpha = 1.0f;
+    }
+    out.set(startPosition).lerp(endPosition, alpha);
+  }
+
+  /**
+   * Stops current movement
+   * @param resultPath
+   */
   public void setPath(GraphPath<TileNode> resultPath) {
+    alpha = 1.0f;
     path = resultPath;
   }
 

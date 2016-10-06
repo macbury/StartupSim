@@ -19,7 +19,7 @@ public class RestTask extends LeafTask<Entity> {
   public void start() {
     super.start();
     alpha = 0;
-    sleepFor = 5f + new Float(Math.random() * 10);
+    sleepFor = 1f;
     Gdx.app.log(TAG, "Going to sleep: " + sleepFor);
   }
 

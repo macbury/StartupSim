@@ -15,7 +15,7 @@ public class FindFoodTask extends EntityTask {
   @Override
   public Status execute() {
     Gdx.app.log(TAG, "Find path to food...");
-    Components.Movement.get(getObject()).target.set(10,10);
+    //Components.Movement.get(getObject()).target.set(10,10);
     return Status.SUCCEEDED;
   }
 

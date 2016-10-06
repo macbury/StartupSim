@@ -40,10 +40,9 @@ public class FindPathTask extends EntityTask {
     if (request.status == PathFinderRequest.SEARCH_FINALIZED) {
       if (request.pathFound) {
         Components.Movement.get(getObject()).setPath(request.resultPath);
-        Gdx.app.log(TAG, "Path found...");
+        Gdx.app.log(TAG, "Path found: " + request.resultPath.getCount());
         return Status.SUCCEEDED;
       } else {
-        Components.Movement.get(getObject()).reset();
         Gdx.app.log(TAG, "Failed...");
         return Status.FAILED;
       }
