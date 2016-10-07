@@ -23,8 +23,8 @@ public class PathFindingSystem extends EntitySystem implements Disposable {
   private static final String TAG = "PathFindingSystem";
   private final MessagesManager messagesManager;
   private final MapGraph mapGraph;
-  private final IndexedAStarPathFinder<TileNode> pathFinder;
-  private final PathFinderQueue<TileNode> queue;
+  private IndexedAStarPathFinder<TileNode> pathFinder;
+  private PathFinderQueue<TileNode> queue;
   private final LoadBalancingScheduler scheduler;
   private MapData mapData;
   private boolean running;
@@ -35,18 +35,22 @@ public class PathFindingSystem extends EntitySystem implements Disposable {
     this.messagesManager = messagesManager;
     this.mapGraph        = mapGraph;
 
-    mapGraph.rebuildIfNeed();// TODO map change we need to create new path finder and queue
-    this.pathFinder = new IndexedAStarPathFinder<TileNode>(mapGraph, true);
-    this.queue      = new PathFinderQueue<TileNode>(pathFinder);
+    // TODO map change we need to create new path finder and queue
     this.scheduler  = new LoadBalancingScheduler(60);
-    scheduler.addWithAutomaticPhasing(queue, 2);
-    messagesManager.addListener(queue, MessageType.RequestPathFinding);
 
     Gdx.app.log(TAG, "Creating...");
   }
 
   @Override
   public void update(float deltaTime) {
+    if (mapGraph.rebuildIfNeed()) {
+      this.pathFinder = new IndexedAStarPathFinder<TileNode>(mapGraph, true);
+      this.queue      = new PathFinderQueue<TileNode>(pathFinder);
+
+      scheduler.addWithAutomaticPhasing(queue, 2);
+      messagesManager.addListener(queue, MessageType.RequestPathFinding);
+    }
+
     scheduler.run(50000);
   }
 

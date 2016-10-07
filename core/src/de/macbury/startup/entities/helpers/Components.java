@@ -15,4 +15,5 @@ public final class Components {
   public final static ComponentMapper<SpriteComponent> Sprite = ComponentMapper.getFor(SpriteComponent.class);
   public final static ComponentMapper<LevelEnvComponent> LevelEnv = ComponentMapper.getFor(LevelEnvComponent.class);
   public final static ComponentMapper<MovementComponent> Movement = ComponentMapper.getFor(MovementComponent.class);
+  public final static ComponentMapper<TargetComponent> Target = ComponentMapper.getFor(TargetComponent.class);
 }

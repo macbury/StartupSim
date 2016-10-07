@@ -2,6 +2,7 @@ package de.macbury.startup.desktop.test;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.pfa.GraphPath;
 import com.badlogic.gdx.ai.pfa.PathFinderRequest;
@@ -52,7 +53,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     stage = new Stage(new ScreenViewport());
 
     this.level        = new LevelEnv(game);
-    worldViewport     = new FillViewport(64, 64, level.camera);
+    worldViewport     = new FillViewport(20, 20, level.camera);
 
     shapeRenderer     = new ShapeRenderer();
 
@@ -88,7 +89,6 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
   public void render(float delta) {
     Gdx.gl.glClearColor(0, 0, 0, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-    level.update(delta);
 
     shapeRenderer.setProjectionMatrix(level.camera.combined);
 
@@ -123,6 +123,8 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
       shapeRenderer.setColor(Color.YELLOW);
       shapeRenderer.rect(touchPos.x, touchPos.y, 1,1);
     } shapeRenderer.end();
+
+    level.update(delta);
   }
 
   @Override
@@ -151,8 +153,12 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     touchPos.set(x,y,0);
     worldViewport.unproject(touchPos);
     touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
+    if (Input.Buttons.LEFT == button) {
+      Components.Target.get(programmerEntity).set((int)touchPos.x, (int)touchPos.y);
+    } else {
+      level.mapData.remove((int)touchPos.x, (int)touchPos.y);
+    }
 
-    Components.Movement.get(programmerEntity).target.set((int)touchPos.x, (int)touchPos.y);
     return true;
   }
 

@@ -20,7 +20,6 @@ import de.macbury.startup.map.pfa.TileNode;
  */
 public class MovementComponent implements Component, Pool.Poolable {
   private static final float DEFAULT_SPEED = 10f;
-  public Vector2 target = new Vector2();// TODO move this into separate component
   private GraphPath<TileNode> path;
   public float speed = DEFAULT_SPEED;
 
@@ -30,13 +29,18 @@ public class MovementComponent implements Component, Pool.Poolable {
   private float alpha;
   private final Vector2 startPosition = new Vector2();
   private final Vector2 endPosition = new Vector2();
+  private final Vector2 direction = new Vector2();
   private boolean finished;
+
+  public Vector2 getDirection() {
+    return direction;
+  }
 
   @Override
   public void reset() {
+    direction.setZero();
     startPosition.setZero();
     endPosition.setZero();
-    target.setZero();
     alpha = 0.0f;
     finished = true;
     path = null;
@@ -51,8 +55,9 @@ public class MovementComponent implements Component, Pool.Poolable {
   public void beginMovement(Vector2 start, Vector2 finish) {
     alpha = 0.0f;
     finished = false;
-    this.startPosition.set(start);
-    this.endPosition.set(finish);
+    startPosition.set(start);
+    endPosition.set(finish);
+    direction.set(start).sub(finish).nor();
   }
 
   /**

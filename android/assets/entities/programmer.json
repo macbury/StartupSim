@@ -1,6 +1,7 @@
 {
   LevelEnv: {},
   Position: {},
+  Target: {},
   Movement: {
     speed: 10
   },

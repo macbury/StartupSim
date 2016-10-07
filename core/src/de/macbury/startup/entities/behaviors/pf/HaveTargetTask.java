@@ -12,11 +12,11 @@ import de.macbury.startup.entities.helpers.Components;
 public class HaveTargetTask extends EntityTask {
   @Override
   public Status execute() {
-    if (Components.Movement.get(getObject()).target.isZero()) {
+    //if (Components.Movement.get(getObject()).target.isZero()) {
       return Status.FAILED;
-    } else {
-      return Status.SUCCEEDED;
-    }
+    //} else {
+     // return Status.SUCCEEDED;
+    //}//
   }
 
   @Override

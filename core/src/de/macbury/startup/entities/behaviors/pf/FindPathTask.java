@@ -25,7 +25,8 @@ public class FindPathTask extends EntityTask {
   public void start() {
     Gdx.app.log(TAG, "Searching path...");
     Vector2 startPosition  = Components.Position.get(getObject());
-    Vector2 targetPosition = Components.Movement.get(getObject()).target;
+    Vector2 targetPosition = Components.Target.get(getObject());
+
     Components.Movement.get(getObject()).setPath(null);
 
     TileNode startNode  = getMapGraph().getNode((int)startPosition.x, (int)startPosition.y);
