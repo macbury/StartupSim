@@ -20,7 +20,7 @@ import de.macbury.startup.map.pfa.TileNode;
  */
 public class MovementComponent implements Component, Pool.Poolable {
   private static final float DEFAULT_SPEED = 10f;
-  private GraphPath<TileNode> path;
+  public final Array<TileNode> path  = new Array<TileNode>();
   public float speed = DEFAULT_SPEED;
 
   /**
@@ -43,7 +43,7 @@ public class MovementComponent implements Component, Pool.Poolable {
     endPosition.setZero();
     alpha = 0.0f;
     finished = true;
-    path = null;
+    path.clear();
     speed = DEFAULT_SPEED;
   }
 
@@ -88,10 +88,15 @@ public class MovementComponent implements Component, Pool.Poolable {
    */
   public void setPath(GraphPath<TileNode> resultPath) {
     alpha = 1.0f;
-    path = resultPath;
+    path.clear();
+
+    path.clear();
+    for (TileNode node : resultPath) {
+      path.add(node);
+    }
   }
 
-  public GraphPath<TileNode> getPath() {
+  public Array<TileNode> getPath() {
     return path;
   }
 

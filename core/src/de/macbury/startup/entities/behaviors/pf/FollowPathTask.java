@@ -19,22 +19,9 @@ public class FollowPathTask extends EntityTask {
   private static final String TAG = "FollowPathTask";
 
   private final Vector2 tempPosition = new Vector2();
-  private final Array<TileNode> path  = new Array<TileNode>();
-
-  @Override
-  public void start() {
-    MovementComponent movementComponent = Components.Movement.get(getObject());
-    path.clear();
-    for (TileNode node : movementComponent.getPath()) {
-      path.add(node);
-    }
-
-    Gdx.app.log(TAG, "Following path for");
-  }
 
   @Override
   public void end() {
-    path.clear();
     Gdx.app.log(TAG, "Finished");
   }
 
@@ -44,9 +31,13 @@ public class FollowPathTask extends EntityTask {
     MovementComponent movement = Components.Movement.get(getObject());
 
     if (movement.isFinished()) {
-      if (path.size > 0) {
-        TileNode node = path.removeIndex(0);
-        movement.beginMovement(position, tempPosition.set(node.x, node.y));
+      if (movement.path.size > 0) {
+        TileNode node = movement.path.removeIndex(0);
+        if (getMapData().isPassable(node.x, node.y)) {
+          movement.beginMovement(position, tempPosition.set(node.x, node.y));
+        } else {
+          return Status.FAILED;
+        }
       } else {
         return Status.SUCCEEDED;
       }

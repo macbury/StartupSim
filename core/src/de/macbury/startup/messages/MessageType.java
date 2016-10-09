@@ -13,7 +13,7 @@ public enum MessageType {
    * Search path in background
    */
   RequestPathFinding(PathFinderRequest.class),
-  Test, FindPath;
+  Test;
 
   /**
    * What type of payload is sended in Telegram

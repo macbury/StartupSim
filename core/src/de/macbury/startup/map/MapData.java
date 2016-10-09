@@ -78,4 +78,8 @@ public class MapData implements Disposable {
   public long getChanges() {
     return changes;
   }
+
+  public boolean isPassable(int x, int y) {
+    return isNotEmpty(x,y);
+  }
 }

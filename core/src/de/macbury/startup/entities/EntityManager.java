@@ -3,6 +3,7 @@ package de.macbury.startup.entities;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.PooledEngine;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import de.macbury.startup.CoreGame;
@@ -14,6 +15,7 @@ import de.macbury.startup.entities.helpers.Components;
  * Manage all {@link com.badlogic.ashley.core.Entity} in game
  */
 public class EntityManager extends PooledEngine implements Disposable {
+  private static final String TAG = "EntityManager";
   private Assets assets;
 
   public EntityManager(CoreGame game) {
@@ -48,6 +50,7 @@ public class EntityManager extends PooledEngine implements Disposable {
     assets = null;
     for (EntitySystem system : this.getSystems()) {
       if (Disposable.class.isInstance(system)) {
+        Gdx.app.log(TAG, "Disposing " + system.getClass().getSimpleName());
         Disposable dis = (Disposable)system;
         dis.dispose();
       }

@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.kotcrab.vis.ui.VisUI;
@@ -53,7 +54,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     stage = new Stage(new ScreenViewport());
 
     this.level        = new LevelEnv(game);
-    worldViewport     = new FillViewport(20, 20, level.camera);
+    worldViewport     = new FillViewport(60, 60, level.camera);
 
     shapeRenderer     = new ShapeRenderer();
 
@@ -102,10 +103,10 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
         }
       }
 
-      GraphPath<TileNode> path = Components.Movement.get(programmerEntity).getPath();
+      Array<TileNode> path = Components.Movement.get(programmerEntity).getPath();
 
       if (path != null) {
-        for (int i = 1; i < path.getCount(); i++) {
+        for (int i = 1; i < path.size; i++) {
           TileNode startNode = path.get(i-1);
           TileNode targetNode = path.get(i);
 

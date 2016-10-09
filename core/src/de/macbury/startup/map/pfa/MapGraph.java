@@ -1,10 +1,14 @@
 package de.macbury.startup.map.pfa;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.ai.pfa.indexed.IndexedGraph;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
+import de.macbury.startup.entities.helpers.Components;
 import de.macbury.startup.map.MapData;
 import de.macbury.startup.map.Tile;
 
@@ -33,12 +37,16 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
   }
 
   public TileNode getNode(int x, int y) {
-    return nodes.get(getIndex(x,y));
+    synchronized (nodes) {
+      return nodes.get(getIndex(x,y));
+    }
   }
 
   @Override
   public int getNodeCount() {
-    return nodes.size;
+    synchronized (nodes) {
+      return nodes.size;
+    }
   }
 
   @Override
@@ -50,7 +58,7 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
    * Check if {@link MapData} did change and rebuild graph
    */
   public boolean rebuildIfNeed() {
-    if (lastChange != mapData.getChanges()) {
+    if (isDirty()) {
       lastChange = mapData.getChanges();
       rebuild();
       return true;
@@ -60,34 +68,45 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
   }
 
   /**
+   * There ware changes in map data and graph needs to be rebuild
+   * @return
+   */
+  public boolean isDirty() {
+    return lastChange != mapData.getChanges();
+  }
+
+  /**
    * Rebuild graph connections and nodes
    */
   public void rebuild() {
-    nodes.clear();
+    synchronized (nodes) {
+      nodes.clear();
 
-    /**
-     * Build nodes
-     */
-    for (int x = 0; x < mapData.getColumns(); x++) {
-      for (int y = 0; y < mapData.getRows(); y++) {
-        TileNode node = new TileNode(x, y, getIndex(x,y), mapData.get(x,y));
-        nodes.add(node);
+      /**
+       * Build nodes
+       */
+      for (int x = 0; x < mapData.getColumns(); x++) {
+        for (int y = 0; y < mapData.getRows(); y++) {
+          TileNode node = new TileNode(x, y, getIndex(x,y), mapData.get(x,y));
+          nodes.add(node);
+        }
+      }
+
+      /**
+       * Connect only nodes that are not diagonal and are passable
+       */
+      for (int x = 0; x < mapData.getColumns(); x++) {
+        for (int y = 0; y < mapData.getRows(); y++) {
+          TileNode rootNode = getNode(x,y);
+
+          if (x > 0) addConnection(rootNode, -1, 0);
+          if (y > 0) addConnection(rootNode, 0, -1);
+          if (x < mapData.getColumns() - 1) addConnection(rootNode, 1, 0);
+          if (y < mapData.getRows() - 1) addConnection(rootNode, 0, 1);
+        }
       }
     }
 
-    /**
-     * Connect only nodes that are not diagonal and are passable
-     */
-    for (int x = 0; x < mapData.getColumns(); x++) {
-      for (int y = 0; y < mapData.getRows(); y++) {
-        TileNode rootNode = getNode(x,y);
-
-        if (x > 0) addConnection(rootNode, -1, 0);
-        if (y > 0) addConnection(rootNode, 0, -1);
-        if (x < mapData.getColumns() - 1) addConnection(rootNode, 1, 0);
-        if (y < mapData.getRows() - 1) addConnection(rootNode, 0, 1);
-      }
-    }
   }
 
   /**
@@ -105,7 +124,10 @@ public class MapGraph implements IndexedGraph<TileNode>, Disposable {
 
   @Override
   public void dispose() {
-    nodes.clear();
+    synchronized (nodes) {
+      nodes.clear();
+    }
     mapData = null;
   }
+
 }

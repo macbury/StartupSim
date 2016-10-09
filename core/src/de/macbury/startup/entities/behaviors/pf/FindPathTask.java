@@ -9,6 +9,7 @@ import com.badlogic.gdx.ai.pfa.PathFinderRequest;
 import com.badlogic.gdx.math.Vector2;
 import de.macbury.startup.entities.behaviors.EntityTask;
 import de.macbury.startup.entities.helpers.Components;
+import de.macbury.startup.map.pfa.PoolablePathFinderRequest;
 import de.macbury.startup.map.pfa.SmoothedGraphPath;
 import de.macbury.startup.map.pfa.TileDistanceHeuristic;
 import de.macbury.startup.map.pfa.TileNode;
@@ -19,21 +20,21 @@ import de.macbury.startup.messages.MessageType;
  */
 public class FindPathTask extends EntityTask {
   private static final String TAG = "FindPathTask";
-  private PathFinderRequest<TileNode> request;
+  private PoolablePathFinderRequest request;
 
   @Override
   public void start() {
     Gdx.app.log(TAG, "Searching path...");
-    Vector2 startPosition  = Components.Position.get(getObject());
-    Vector2 targetPosition = Components.Target.get(getObject());
 
-    Components.Movement.get(getObject()).setPath(null);
-
-    TileNode startNode  = getMapGraph().getNode((int)startPosition.x, (int)startPosition.y);
-    TileNode targetNode = getMapGraph().getNode((int)targetPosition.x, (int)targetPosition.y);
-
-    this.request = new PathFinderRequest<TileNode>(startNode, targetNode, new TileDistanceHeuristic(), new SmoothedGraphPath());
+    this.request = PoolablePathFinderRequest.pool.obtain();
+    request.prepare(getMapGraph(), getObject(), getMessages());
     dispatch(MessageType.RequestPathFinding, request);
+  }
+
+  @Override
+  public void end() {
+    PoolablePathFinderRequest.pool.free(request);
+    request = null;
   }
 
   @Override

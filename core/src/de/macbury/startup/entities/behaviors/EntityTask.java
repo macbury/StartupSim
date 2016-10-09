@@ -41,12 +41,20 @@ public abstract class EntityTask extends LeafTask<Entity> implements Telegraph {
   }
 
   /**
+   * Reference to {@link LevelEnv#messages}
+   * @return
+   */
+  protected MessagesManager getMessages() {
+    return getLevelEnv().messages;
+  }
+
+  /**
    * Send message
    * @param type
    * @param payload
    */
   protected void dispatch(MessageType type, Object payload) {
-    getLevelEnv().messages.dispatchMessage(this, type, payload);
+    getMessages().dispatchMessage(this, type, payload);
   }
 
   protected void dispatch(MessageType type) {
