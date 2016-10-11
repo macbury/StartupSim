@@ -2,8 +2,9 @@
   LevelEnv: {},
   Position: {},
   Target: {},
+  NotificationCloud: {},
   Movement: {
-    speed: 10
+    speed: 3.5
   },
   CharsetAnimation: {
     name: "charset:programmer.png"

@@ -44,6 +44,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
   public void preload() {
     VisUI.load();
     game.assets.load("entity:programmer.json", EntityBlueprint.class);
+    game.assets.load("entity:sandwich.json", EntityBlueprint.class);
   }
 
   @Override
@@ -54,7 +55,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     stage = new Stage(new ScreenViewport());
 
     this.level        = new LevelEnv(game);
-    worldViewport     = new FillViewport(60, 60, level.camera);
+    worldViewport     = new FillViewport(24, 24, level.camera);
 
     shapeRenderer     = new ShapeRenderer();
 
@@ -155,7 +156,8 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     worldViewport.unproject(touchPos);
     touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
     if (Input.Buttons.LEFT == button) {
-      Components.Target.get(programmerEntity).set((int)touchPos.x, (int)touchPos.y);
+      //Components.Target.get(programmerEntity).set((int)touchPos.x, (int)touchPos.y);
+      level.entities.spawn("entity:sandwich.json", (int)touchPos.x, (int)touchPos.y);
     } else {
       level.mapData.remove((int)touchPos.x, (int)touchPos.y);
     }

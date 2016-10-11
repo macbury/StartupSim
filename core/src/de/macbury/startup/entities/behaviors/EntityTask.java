@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.btree.LeafTask;
 import com.badlogic.gdx.ai.msg.Telegraph;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import de.macbury.startup.entities.EntityManager;
 import de.macbury.startup.entities.helpers.Components;
 import de.macbury.startup.level.LevelEnv;
 import de.macbury.startup.map.MapData;
@@ -48,6 +49,13 @@ public abstract class EntityTask extends LeafTask<Entity> implements Telegraph {
     return getLevelEnv().messages;
   }
 
+  /**
+   * Reference to {@link LevelEnv#entities}
+   * @return
+   */
+  protected EntityManager getEntities() {
+    return getLevelEnv().entities;
+  }
   /**
    * Send message
    * @param type

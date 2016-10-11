@@ -3,6 +3,8 @@ import goToSleep:"de.macbury.startup.entities.behaviors.RestTask"
 import iAmHungry?:"de.macbury.startup.entities.behaviors.IAmHungryTask"
 import eat:"de.macbury.startup.entities.behaviors.EatTask"
 
+import notification:"de.macbury.startup.entities.behaviors.NotificationTask"
+
 import haveTarget?:"de.macbury.startup.entities.behaviors.pf.HaveTargetTask"
 import findPath:"de.macbury.startup.entities.behaviors.pf.FindPathTask"
 import followPath:"de.macbury.startup.entities.behaviors.pf.FollowPathTask"
@@ -11,9 +13,15 @@ import findFood:"de.macbury.startup.entities.behaviors.FindFoodTask"
 root
   dynamicGuardSelector
     (iAmHungry?) sequence
-      findFood
-      findPath
-      followPath
+      selector
+        findFood
+        notification type:"NoFoodFound"
+      selector
+        findPath
+        notification type:"NoRouteFound"
+      selector
+        followPath
+        notification type:"ObstalceFound"
       eat
     sequence
       bark

@@ -57,13 +57,13 @@ public class PathFindingSystem extends EntitySystem implements Disposable, Teleg
 
       runningRequests.begin(); {
         for (PoolablePathFinderRequest request : runningRequests) {
-          request.status = SEARCH_FINALIZED;
+          request.status    = SEARCH_FINALIZED;
           request.pathFound = false;
           runningRequests.removeValue(request, true);
         }
       } runningRequests.end();
     } else {
-      scheduler.run(100000);
+      scheduler.run(50000);
       runningRequests.begin(); {
         for (PoolablePathFinderRequest request : runningRequests) {
           if (request.status == SEARCH_FINALIZED) {

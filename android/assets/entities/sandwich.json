@@ -1,5 +1,6 @@
 {
   Position: {},
+  Consumable: {},
   Sprite: {
     atlas: "atlas:interior.atlas",
     texture: "sandwich"

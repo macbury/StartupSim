@@ -14,5 +14,6 @@ public class BuildAtlases {
     settings.paddingY = 2;
 
     TexturePacker.process("../../raw/interior", "atlases", "interior.atlas");
+    TexturePacker.process("../../raw/notifications", "atlases", "notifications.atlas");
   }
 }
