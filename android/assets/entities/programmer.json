@@ -2,6 +2,7 @@
   LevelEnv: {},
   Position: {},
   Target: {},
+  Throttle: {},
   NotificationCloud: {},
   Movement: {
     speed: 3.5

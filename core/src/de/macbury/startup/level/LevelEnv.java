@@ -58,6 +58,7 @@ public class LevelEnv implements Disposable {
       mapData.remove(i,4);
     }
 
+    entities.addSystem(new RateLimitSystem());
     entities.addSystem(new RefLevelSystem(this));
     entities.addSystem(new ProgrammerSystem());
     entities.addSystem(new PathFindingSystem(mapGraph, mapData, game.messages));

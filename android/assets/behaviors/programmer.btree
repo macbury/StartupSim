@@ -3,22 +3,25 @@ import goToSleep:"de.macbury.startup.entities.behaviors.RestTask"
 import iAmHungry?:"de.macbury.startup.entities.behaviors.IAmHungryTask"
 import eat:"de.macbury.startup.entities.behaviors.EatTask"
 
+import limit?:"de.macbury.startup.entities.behaviors.limit.LimitGuardTask"
+import throttle:"de.macbury.startup.entities.behaviors.limit.ThrottleTask"
+
 import notification:"de.macbury.startup.entities.behaviors.NotificationTask"
 
 import haveTarget?:"de.macbury.startup.entities.behaviors.pf.HaveTargetTask"
 import findPath:"de.macbury.startup.entities.behaviors.pf.FindPathTask"
 import followPath:"de.macbury.startup.entities.behaviors.pf.FollowPathTask"
-import findFood:"de.macbury.startup.entities.behaviors.FindFoodTask"
+import findFood:"de.macbury.startup.entities.behaviors.consuming.FindFoodTask"
 
 root
   dynamicGuardSelector
-    (iAmHungry?) sequence
+    (limit? type:"Consuming") (iAmHungry?) sequence
       selector
         findFood
-        notification type:"NoFoodFound"
-      selector
-        findPath
-        notification type:"NoRouteFound"
+        alwaysFail
+          notification type:"NoFoodFound"
+        alwaysFail
+          throttle type:"Consuming" time:10
       selector
         followPath
         notification type:"ObstalceFound"

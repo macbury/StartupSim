@@ -33,29 +33,33 @@ public class FindPathTask extends EntityTask {
 
   @Override
   public void end() {
-    PoolablePathFinderRequest.pool.free(request);
+    if (request != null)
+      PoolablePathFinderRequest.pool.free(request);
     request = null;
-  }
-
-  @Override
-  public Status execute() {
-    if (request.status == PathFinderRequest.SEARCH_FINALIZED) {
-      if (request.pathFound) {
-        Components.Movement.get(getObject()).setPath(request.resultPath);
-        Gdx.app.log(TAG, "Path found: " + request.resultPath.getCount());
-        return Status.SUCCEEDED;
-      } else {
-        Gdx.app.log(TAG, "Failed...");
-        return Status.FAILED;
-      }
-    } else {
-      return Status.RUNNING;
-    }
   }
 
   @Override
   protected Task<Entity> copyTo(Task<Entity> task) {
     return new FindPathTask();
+  }
+
+  @Override
+  public Status execute() {
+    if (request == null) {
+      Gdx.app.log(TAG, "No target found...");
+      return Status.FAILED;
+    } else if (request.status == PathFinderRequest.SEARCH_FINALIZED) {
+      if (request.pathFound) {
+        Components.Movement.get(getObject()).setPath(request.resultPath);
+        Gdx.app.log(TAG, "Path found: " + request.resultPath.getCount());
+        return Status.SUCCEEDED;
+      } else {
+        Gdx.app.log(TAG, "Path not found...");
+        return Status.FAILED;
+      }
+    } else {
+      return Status.RUNNING;
+    }
   }
 
   @Override

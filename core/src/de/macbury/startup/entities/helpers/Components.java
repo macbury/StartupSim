@@ -17,4 +17,5 @@ public final class Components {
   public final static ComponentMapper<MovementComponent> Movement = ComponentMapper.getFor(MovementComponent.class);
   public final static ComponentMapper<TargetComponent> Target = ComponentMapper.getFor(TargetComponent.class);
   public final static ComponentMapper<NotificationCloudComponent> NotificationCloud = ComponentMapper.getFor(NotificationCloudComponent.class);
+  public final static ComponentMapper<ThrottleComponent> Throttle = ComponentMapper.getFor(ThrottleComponent.class);
 }
