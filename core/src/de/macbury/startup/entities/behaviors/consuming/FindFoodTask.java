@@ -8,6 +8,7 @@ import com.badlogic.gdx.ai.btree.Task;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
+import de.macbury.startup.entities.FarthestEntityComparator;
 import de.macbury.startup.entities.behaviors.EntityTask;
 import de.macbury.startup.entities.behaviors.pf.BaseFindPathTask;
 import de.macbury.startup.entities.components.ConsumableComponent;
@@ -25,7 +26,7 @@ public class FindFoodTask extends BaseFindPathTask {
   private Family consumableFamily = Family.all(PositionComponent.class, ConsumableComponent.class).get();
   private Array<Entity> consumableEntitiesToCheck = new Array<Entity>(false, 16);
   private PoolablePathFinderRequest validRequest;
-
+  private FarthestEntityComparator comparator = new FarthestEntityComparator();
   @Override
   public void start() {
     super.start();
@@ -33,12 +34,8 @@ public class FindFoodTask extends BaseFindPathTask {
     for (Entity entity : getEntities().getEntitiesFor(consumableFamily)) {
       consumableEntitiesToCheck.add(entity);
     }
-    /*consumableEntitiesToCheck.sort(new Comparator<Entity>() {
-      @Override
-      public int compare(Entity o1, Entity o2) {
-        return 0;
-      }
-    });*/ //TODO sort from farthest to closest
+    comparator.setSourceEntity(getObject());
+    consumableEntitiesToCheck.sort(comparator);
     checkPathToNextEntity();
   }
 
@@ -46,6 +43,7 @@ public class FindFoodTask extends BaseFindPathTask {
     if (consumableEntitiesToCheck.size > 0) {
       Entity entity = consumableEntitiesToCheck.pop();
       requestPathFinding(Components.Position.get(entity));
+      Gdx.app.log(TAG, "Searching path to");
     }
   }
 
@@ -66,6 +64,7 @@ public class FindFoodTask extends BaseFindPathTask {
   @Override
   public void end() {
     super.end();
+    comparator.setSourceEntity(null);
     validRequest = null;
   }
 
@@ -77,8 +76,10 @@ public class FindFoodTask extends BaseFindPathTask {
   @Override
   public void onPathFinderRequestComplete(PoolablePathFinderRequest request) {
     if (request.pathFound) {
+      Gdx.app.log(TAG, "Found path");
       validRequest = request;
     } else {
+      Gdx.app.log(TAG, "Path not found");
       checkPathToNextEntity();
     }
   }

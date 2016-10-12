@@ -49,29 +49,44 @@ public class PathFindingSystem extends EntitySystem implements Disposable, Teleg
   @Override
   public void update(float deltaTime) {
     if (mapGraph.rebuildIfNeed()) {
-      this.pathFinder = new IndexedAStarPathFinder<TileNode>(mapGraph);
-      this.queue      = new PathFinderQueue<TileNode>(pathFinder);
-
-      this.scheduler  = new LoadBalancingScheduler(60);
-      scheduler.addWithAutomaticPhasing(queue, 2);
-
-      runningRequests.begin(); {
-        for (PoolablePathFinderRequest request : runningRequests) {
-          request.status    = SEARCH_FINALIZED;
-          request.pathFound = false;
-          runningRequests.removeValue(request, true);
-        }
-      } runningRequests.end();
+      reset();
     } else {
       scheduler.run(50000);
-      runningRequests.begin(); {
-        for (PoolablePathFinderRequest request : runningRequests) {
-          if (request.status == SEARCH_FINALIZED) {
-            runningRequests.removeValue(request, true);
-          }
-        }
-      } runningRequests.end();
+      clearFinalized();
     }
+  }
+
+  /**
+   * Clear running requests that are finalized
+   */
+  private void clearFinalized() {
+    runningRequests.begin(); {
+      for (PoolablePathFinderRequest request : runningRequests) {
+        if (request.status == SEARCH_FINALIZED) {
+          runningRequests.removeValue(request, true);
+        }
+      }
+    } runningRequests.end();
+  }
+
+  /**
+   * Create Pathfinder and scheduler and finalize all running path finding requests
+   */
+  private void reset() {
+    this.pathFinder = new IndexedAStarPathFinder<TileNode>(mapGraph);
+    this.queue      = new PathFinderQueue<TileNode>(pathFinder);
+
+    this.scheduler  = new LoadBalancingScheduler(60);
+    scheduler.addWithAutomaticPhasing(queue, 2);
+
+    runningRequests.begin(); {
+      for (PoolablePathFinderRequest request : runningRequests) {
+        request.status    = SEARCH_FINALIZED;
+        request.pathFound = false;
+        runningRequests.removeValue(request, true);
+        request.dispatcher.dispatchMessage(this, request.client, request.responseMessageCode, request);
+      }
+    } runningRequests.end();
   }
 
   @Override
@@ -83,6 +98,9 @@ public class PathFindingSystem extends EntitySystem implements Disposable, Teleg
 
   @Override
   public boolean handleMessage(Telegram msg) {
+    /**
+     * Redirect request to queue
+     */
     if (queue != null && MessageType.get(msg) == MessageType.RequestPathFinding) {
       runningRequests.add((PoolablePathFinderRequest) msg.extraInfo);
       return queue.handleMessage(msg);

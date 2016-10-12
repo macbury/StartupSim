@@ -42,7 +42,12 @@ public class RenderingSystem extends IteratingSystem implements Disposable {
     if (Components.CharsetAnimation.has(entity)) {
       CharsetAnimationComponent charsetAnimation = Components.CharsetAnimation.get(entity);
       MovementComponent movement = Components.Movement.get(entity);
-      charsetAnimation.stateTime += deltaTime;
+      if (movement.isFinished())  {
+        //charsetAnimation.stateTime = 0;
+      } else {
+        charsetAnimation.stateTime += deltaTime;
+      }
+
       spriteBatch.draw(charsetAnimation.getKeyFrame(Direction.from(movement.getDirection())), position.x, position.y, 1f, 1f);
     } else if (Components.Sprite.has(entity)) {
       SpriteComponent spriteComponent = Components.Sprite.get(entity);
