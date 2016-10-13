@@ -192,16 +192,19 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
 
   @Override
   public void dispose() {
-    reset();
+    clear();
     tempNodes.clear();
     nodePool = null;
     treePool = null;
   }
 
-  @Override
-  public void reset() {
+  /**
+   * Clear all nodes and sub trees
+   */
+  public void clear() {
     if (regions != null) {
       for (int i = 0; i < regions.length; i++) {
+        regions[i].clear();
         treePool.free(regions[i]);
       }
     }
@@ -209,7 +212,14 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
     regions = null;
     nodePool.freeAll(nodes);
     nodes.clear();
+  }
+
+  @Override
+  public void reset() {
+    clear();
     zone.set(0,0,1,1);
+    regions = null;
+    level = 0;
   }
 
   /**
@@ -223,7 +233,7 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
   /**
    * Find all elements that are in rectangle
    * @param list
-   * @param r
+   * @param rectangle
    * @return
    */
   public Array<QuadNodeElementType> getElements(Array<QuadNodeElementType> list, Rectangle rectangle) {
@@ -277,5 +287,13 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
       regions[REGION_SW].getAllZones(out);
       regions[REGION_SE].getAllZones(out);
     }
+  }
+
+  public Pool<QuadNode<QuadNodeElementType>> getNodePool() {
+    return nodePool;
+  }
+
+  public Pool<QuadTree<QuadNodeElementType>> getTreePool() {
+    return treePool;
   }
 }

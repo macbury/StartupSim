@@ -6,12 +6,13 @@ import com.badlogic.gdx.utils.Array;
 import de.macbury.startup.map.quadtree.QuadTree;
 import de.macbury.tests.startupsim.support.BaseGameTest;
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class QuatTreeTest extends BaseGameTest {
   @Test
   public void testInsertElements() {
-
     QuadTree.maxItemByNode = 1;
     QuadTree.maxLevel = 2;
 
@@ -55,5 +56,47 @@ public class QuatTreeTest extends BaseGameTest {
     quadTree.getAllZones(zoneList);
 
     assertTrue(zoneList.size == 9);
+  }
+
+  @Test
+  public void testClearing() {
+    QuadTree<Rectangle> tree = new QuadTree<Rectangle>(0, 0, 10, 10);
+    Rectangle r1 = new Rectangle(1, 1, 1, 1);
+    Rectangle r2 = new Rectangle(2, 2, 1, 1);
+    Rectangle r3 = new Rectangle(4, 4, 1, 1);
+    Rectangle r4 = new Rectangle(6, 6, 1, 1);
+    Rectangle r5 = new Rectangle(4, 4, 2, 2);
+    Rectangle r6 = new Rectangle(0.5f, 6.5f, 0.5f, 0.5f);
+
+    tree.insert(r1, r1);
+    tree.insert(r2, r2);
+    tree.insert(r3, r3);
+    tree.insert(r4, r4);
+    tree.insert(r5, r5);
+    tree.insert(r6, r6);
+
+    tree.clear();
+
+    Array<Rectangle> list = new Array<Rectangle>();
+    tree.getElements(list, new Rectangle(2, 2, 1, 1));
+
+    assertEquals(6, tree.getNodePool().getFree());
+    assertEquals(4, tree.getTreePool().getFree());
+    assertEquals(list.size, 0);
+
+    tree.insert(r1, r1);
+    tree.insert(r2, r2);
+    tree.insert(r3, r3);
+    tree.insert(r4, r4);
+    tree.insert(r5, r5);
+    tree.insert(r6, r6);
+
+    tree.clear();
+
+    tree.getElements(list, new Rectangle(2, 2, 1, 1));
+
+    assertEquals(6, tree.getNodePool().getFree());
+    assertEquals(4, tree.getTreePool().getFree());
+    assertEquals(list.size, 0);
   }
 }

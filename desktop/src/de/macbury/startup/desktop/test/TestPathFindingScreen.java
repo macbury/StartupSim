@@ -54,7 +54,6 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     this.aiEditor     = new AIEditor(VisUI.getSkin());
     aiEditor.addDefaultTaskClasses();
 
-    tree              = new QuadTree<Entity>(0, 0, 10, 10);
     stage             = new Stage(new ScreenViewport());
 
     this.level        = new LevelEnv(game);

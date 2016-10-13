@@ -1,5 +1,6 @@
 package de.macbury.startup.level;
 
+import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Disposable;
 import de.macbury.startup.CoreGame;
@@ -8,6 +9,7 @@ import de.macbury.startup.entities.EntityManager;
 import de.macbury.startup.entities.systems.*;
 import de.macbury.startup.map.MapData;
 import de.macbury.startup.map.pfa.MapGraph;
+import de.macbury.startup.map.quadtree.QuadTree;
 import de.macbury.startup.messages.MessagesManager;
 
 /**
@@ -18,10 +20,12 @@ public class LevelEnv implements Disposable {
   public final EntityManager entities;
   public final OrthographicCamera camera;
   public final MapGraph mapGraph;
+  public final QuadTree<Entity> tree;
   public Assets assets;
   public MessagesManager messages;
 
   public LevelEnv(CoreGame game) {
+    tree              = new QuadTree<Entity>(0, 0, 100, 100);
     messages          = game.messages;
     assets            = game.assets;
     camera            = new OrthographicCamera();
@@ -77,6 +81,7 @@ public class LevelEnv implements Disposable {
 
   @Override
   public void dispose() {
+    tree.dispose();
     entities.dispose();
     mapGraph.dispose();
     assets   = null;
