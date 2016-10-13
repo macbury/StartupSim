@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -41,6 +42,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
   private AIEditor aiEditor;
   private Stage stage;
   private QuadTree<Entity> tree;
+  private Array<Rectangle> zoneList = new Array<Rectangle>();
 
   @Override
   public void preload() {
@@ -126,6 +128,21 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
 
       shapeRenderer.setColor(Color.YELLOW);
       shapeRenderer.rect(touchPos.x, touchPos.y, 1,1);
+
+      zoneList.clear();
+      level.tree.getAllZones(zoneList);
+      for (Rectangle z : zoneList) {
+        shapeRenderer.rect(
+                z.x,
+                z.y,
+                z.width,
+                z.height,
+                Color.GREEN,
+                Color.GREEN,
+                Color.GREEN,
+                Color.GREEN
+        );
+      }
     } shapeRenderer.end();
 
     level.update(delta);

@@ -25,11 +25,11 @@ public class LevelEnv implements Disposable {
   public MessagesManager messages;
 
   public LevelEnv(CoreGame game) {
-    tree              = new QuadTree<Entity>(0, 0, 100, 100);
+    tree              = new QuadTree<Entity>(0, 0, 50, 50);
     messages          = game.messages;
     assets            = game.assets;
     camera            = new OrthographicCamera();
-    mapData           = new MapData(100,100);
+    mapData           = new MapData(50,50);
     mapGraph          = new MapGraph(mapData);
     entities          = new EntityManager(game);
 
@@ -62,6 +62,7 @@ public class LevelEnv implements Disposable {
       mapData.remove(i,4);
     }
 
+    entities.addSystem(new QuadTreeSystem(tree));
     entities.addSystem(new RateLimitSystem());
     entities.addSystem(new RefLevelSystem(this));
     entities.addSystem(new ProgrammerSystem());
