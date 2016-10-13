@@ -21,12 +21,14 @@ import java.util.Comparator;
 /**
  * Find consumable entity and set as target to follow
  */
+//TODO run path finding on all tasks at once
 public class FindFoodTask extends BaseFindPathTask {
   private static final String TAG = "FindFoodTask";
   private Family consumableFamily = Family.all(PositionComponent.class, ConsumableComponent.class).get();
   private Array<Entity> consumableEntitiesToCheck = new Array<Entity>(false, 16);
   private PoolablePathFinderRequest validRequest;
   private FarthestEntityComparator comparator = new FarthestEntityComparator();
+
   @Override
   public void start() {
     super.start();

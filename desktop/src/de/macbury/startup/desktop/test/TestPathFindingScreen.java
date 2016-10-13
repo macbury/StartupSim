@@ -25,6 +25,7 @@ import de.macbury.startup.level.LevelEnv;
 import de.macbury.startup.map.pfa.SmoothedGraphPath;
 import de.macbury.startup.map.pfa.TileDistanceHeuristic;
 import de.macbury.startup.map.pfa.TileNode;
+import de.macbury.startup.map.quadtree.QuadTree;
 import de.macbury.startup.messages.MessageType;
 import de.macbury.startup.screens.AbstractScreen;
 import io.piotrjastrzebski.bte.AIEditor;
@@ -39,6 +40,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
   private Entity programmerEntity;
   private AIEditor aiEditor;
   private Stage stage;
+  private QuadTree<Entity> tree;
 
   @Override
   public void preload() {
@@ -52,7 +54,8 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     this.aiEditor     = new AIEditor(VisUI.getSkin());
     aiEditor.addDefaultTaskClasses();
 
-    stage = new Stage(new ScreenViewport());
+    tree              = new QuadTree<Entity>(0, 0, 10, 10);
+    stage             = new Stage(new ScreenViewport());
 
     this.level        = new LevelEnv(game);
     worldViewport     = new FillViewport(24, 24, level.camera);
