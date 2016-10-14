@@ -1,5 +1,6 @@
 package de.macbury.startup;
 
+import de.macbury.startup.screens.test.TestPathFindingScreen;
 import de.macbury.startup.screens.test.TestRenderingScreen;
 
 /**
@@ -9,6 +10,6 @@ public class AndroidGame extends CoreGame {
   @Override
   public void create() {
     super.create();
-    screens.set(new TestRenderingScreen());
+    screens.set(new TestPathFindingScreen());
   }
 }

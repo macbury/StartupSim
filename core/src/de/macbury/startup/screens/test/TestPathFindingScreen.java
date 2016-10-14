@@ -1,4 +1,4 @@
-package de.macbury.startup.desktop.test;
+package de.macbury.startup.screens.test;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -29,7 +30,6 @@ import de.macbury.startup.map.pfa.TileNode;
 import de.macbury.startup.map.quadtree.QuadTree;
 import de.macbury.startup.messages.MessageType;
 import de.macbury.startup.screens.AbstractScreen;
-import io.piotrjastrzebski.bte.AIEditor;
 
 /**
  * Created by macbury on 30.09.16.
@@ -39,10 +39,9 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
   private FillViewport worldViewport;
   private ShapeRenderer shapeRenderer;
   private Entity programmerEntity;
-  private AIEditor aiEditor;
   private Stage stage;
-  private QuadTree<Entity> tree;
   private Array<Rectangle> zoneList = new Array<Rectangle>();
+  private Table root;
 
   @Override
   public void preload() {
@@ -53,9 +52,6 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
 
   @Override
   public void create() {
-    this.aiEditor     = new AIEditor(VisUI.getSkin());
-    aiEditor.addDefaultTaskClasses();
-
     stage             = new Stage(new ScreenViewport());
 
     this.level        = new LevelEnv(game);
@@ -69,6 +65,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     inputMultiplexer.addProcessor(stage);
     inputMultiplexer.addProcessor(new GestureDetector(this));
     Gdx.input.setInputProcessor(inputMultiplexer);
+
   }
 
   @Override
@@ -174,19 +171,19 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
     touchPos.set(x,y,0);
     worldViewport.unproject(touchPos);
     touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
-    if (Input.Buttons.LEFT == button) {
-      //Components.Target.get(programmerEntity).set((int)touchPos.x, (int)touchPos.y);
-      level.entities.spawn("entity:sandwich.json", (int)touchPos.x, (int)touchPos.y);
-    } else {
-      level.mapData.remove((int)touchPos.x, (int)touchPos.y);
-    }
-
+    level.mapData.remove((int)touchPos.x, (int)touchPos.y);
+    Gdx.input.vibrate(500);
     return true;
   }
 
   @Override
   public boolean longPress(float x, float y) {
-    return false;
+    touchPos.set(x,y,0);
+    worldViewport.unproject(touchPos);
+    touchPos.set(MathUtils.floor(touchPos.x), MathUtils.floor(touchPos.y), 0);
+    level.entities.spawn("entity:sandwich.json", (int)touchPos.x, (int)touchPos.y);
+    Gdx.input.vibrate(1000);
+    return true;
   }
 
   @Override
