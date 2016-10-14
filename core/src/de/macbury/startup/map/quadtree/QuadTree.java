@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
 
-import java.util.ArrayList;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Simple implementation quad tree with object pooling
@@ -23,31 +23,31 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
    * the four sub regions,
    * may be null if not needed
    */
-  private QuadTree<QuadNodeElementType>[] regions;
+  protected QuadTree<QuadNodeElementType>[] regions;
 
-  public static final int REGION_SELF = -1;
-  public static final int REGION_NW = 0;
-  public static final int REGION_NE = 1;
-  public static final int REGION_SW = 2;
-  public static final int REGION_SE = 3;
+  protected static final int REGION_SELF = -1;
+  protected static final int REGION_NW = 0;
+  protected static final int REGION_NE = 1;
+  protected static final int REGION_SW = 2;
+  protected static final int REGION_SE = 3;
 
-  private Pool<QuadNode<QuadNodeElementType>> nodePool;
-  private Pool<QuadTree<QuadNodeElementType>> treePool;
+  protected Pool<QuadNode<QuadNodeElementType>> nodePool;
+  protected Pool<QuadTree<QuadNodeElementType>> treePool;
   /**
    * Current level of tree
    */
-  private int level;
+  protected int level;
   /**
    * Nodes on current level
    */
-  private final Array<QuadNode<QuadNodeElementType>> nodes;
+  protected final Array<QuadNode<QuadNodeElementType>> nodes;
 
   /**
    * current rectangle zone
    */
   private final Rectangle zone;
 
-  private final Array<QuadNode<QuadNodeElementType>> tempNodes = new Array<QuadNode<QuadNodeElementType>>();
+  protected final Array<QuadNode<QuadNodeElementType>> tempNodes = new Array<QuadNode<QuadNodeElementType>>();
 
   /**
    * Initialize new root node
@@ -64,24 +64,42 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
     regions       = null;
   }
 
+  protected QuadTree(QuadTree<QuadNodeElementType> parent) {
+    this();
+    this.treePool = parent.treePool;
+    this.nodePool = parent.nodePool;
+  }
+
   /**
    * Initialize pools used for creating objects
    */
-  private void initializePools() {
+  protected void initializePools() {
+    Class[] quadTreeConstructorArguments = new Class[] { QuadTree.class };
     this.nodePool = new Pool<QuadNode<QuadNodeElementType>>() {
       @Override
       protected QuadNode<QuadNodeElementType> newObject() {
         return new QuadNode<QuadNodeElementType>();
       }
     };
-
     this.treePool = new Pool<QuadTree<QuadNodeElementType>>() {
       @Override
       protected QuadTree<QuadNodeElementType> newObject() {
-        QuadTree<QuadNodeElementType> tree = new QuadTree<QuadNodeElementType>();
-        tree.treePool = this;
-        tree.nodePool = nodePool;
-        return tree;
+        /**
+         * We want sub nodes to be the same class as root node
+         */
+        try {
+          return QuadTree.this.getClass().getDeclaredConstructor(QuadTree.class).newInstance(QuadTree.this);
+        } catch (InstantiationException e) {
+          e.printStackTrace();
+        } catch (IllegalAccessException e) {
+          e.printStackTrace();
+        } catch (InvocationTargetException e) {
+          e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+          e.printStackTrace();
+        }
+
+        return null;
       }
     };
   }
@@ -95,7 +113,7 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
     return this;
   }
 
-  private int findRegion(Rectangle r) {
+  protected int findRegion(Rectangle r) {
     int region = REGION_SELF;
     if (nodes.size >= maxItemByNode && this.level < maxLevel) {
       if (regions == null) {
@@ -231,20 +249,21 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
   }
 
   /**
-   * Find all elements that are in rectangle
+   * Find all elements that trees are in zone
    * @param list
-   * @param rectangle
+   * @param zone
    * @return
    */
-  public Array<QuadNodeElementType> getElements(Array<QuadNodeElementType> list, Rectangle rectangle) {
-    int region = this.findRegion(rectangle);
-
+  public Array<QuadNodeElementType> getElements(Array<QuadNodeElementType> list, Rectangle zone) {
+    int region = this.findRegion(zone);
+    //TODO filter all elements after get elements, remove query from this method
     for (QuadNode<QuadNodeElementType> node : nodes) {
-      list.add(node.getElement());
+      if (node.overlaps(zone))
+        list.add(node.getElement());
     }
 
     if (region != REGION_SELF) {
-      regions[region].getElements(list, rectangle);
+      regions[region].getElements(list, zone);
     } else {
       getAllElements(list, true);
     }

@@ -112,7 +112,7 @@ public class TestPathFindingScreen extends AbstractScreen implements GestureDete
 
       if (path != null) {
         for (int i = 1; i < path.size; i++) {
-          TileNode startNode = path.get(i-1);
+          TileNode startNode  = path.get(i-1);
           TileNode targetNode = path.get(i);
 
           shapeRenderer.setColor(Color.FOREST);

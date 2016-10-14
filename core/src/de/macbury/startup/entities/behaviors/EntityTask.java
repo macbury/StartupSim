@@ -9,6 +9,7 @@ import de.macbury.startup.entities.helpers.Components;
 import de.macbury.startup.level.LevelEnv;
 import de.macbury.startup.map.MapData;
 import de.macbury.startup.map.pfa.MapGraph;
+import de.macbury.startup.map.quadtree.EntityQuadTree;
 import de.macbury.startup.messages.MessageType;
 import de.macbury.startup.messages.MessagesManager;
 
@@ -55,6 +56,13 @@ public abstract class EntityTask extends LeafTask<Entity> implements Telegraph {
    */
   protected EntityManager getEntities() {
     return getLevelEnv().entities;
+  }
+  /**
+   * Reference to {@link LevelEnv#tree}
+   * @return
+   */
+  protected EntityQuadTree getTree() {
+    return getLevelEnv().tree;
   }
   /**
    * Send message

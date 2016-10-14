@@ -36,9 +36,6 @@ public class QuatTreeTest extends BaseGameTest {
     quadTree.getElements(list, new Rectangle(2, 2, 1, 1));
 
     Array<Rectangle> expected = new Array<Rectangle>();
-    expected.add(r1);
-    expected.add(r3);
-    expected.add(r5);
     expected.add(r2);
 
     assertEquals(expected, list);

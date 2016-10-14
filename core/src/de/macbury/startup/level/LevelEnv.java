@@ -9,6 +9,7 @@ import de.macbury.startup.entities.EntityManager;
 import de.macbury.startup.entities.systems.*;
 import de.macbury.startup.map.MapData;
 import de.macbury.startup.map.pfa.MapGraph;
+import de.macbury.startup.map.quadtree.EntityQuadTree;
 import de.macbury.startup.map.quadtree.QuadTree;
 import de.macbury.startup.messages.MessagesManager;
 
@@ -20,12 +21,12 @@ public class LevelEnv implements Disposable {
   public final EntityManager entities;
   public final OrthographicCamera camera;
   public final MapGraph mapGraph;
-  public final QuadTree<Entity> tree;
+  public final EntityQuadTree tree;
   public Assets assets;
   public MessagesManager messages;
 
   public LevelEnv(CoreGame game) {
-    tree              = new QuadTree<Entity>(0, 0, 50, 50);
+    tree              = new EntityQuadTree(0, 0, 50, 50);
     messages          = game.messages;
     assets            = game.assets;
     camera            = new OrthographicCamera();
