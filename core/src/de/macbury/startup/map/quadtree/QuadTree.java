@@ -48,7 +48,7 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
   private final Rectangle zone;
 
   protected final Array<QuadNode<QuadNodeElementType>> tempNodes = new Array<QuadNode<QuadNodeElementType>>();
-
+  protected final Array<QuadNodeElementType> tempElements = new Array<QuadNodeElementType>();
   /**
    * Initialize new root node
    */
@@ -84,22 +84,7 @@ public class QuadTree<QuadNodeElementType> implements Disposable, Pool.Poolable 
     this.treePool = new Pool<QuadTree<QuadNodeElementType>>() {
       @Override
       protected QuadTree<QuadNodeElementType> newObject() {
-        /**
-         * We want sub nodes to be the same class as root node
-         */
-        try {
-          return QuadTree.this.getClass().getDeclaredConstructor(QuadTree.class).newInstance(QuadTree.this);
-        } catch (InstantiationException e) {
-          e.printStackTrace();
-        } catch (IllegalAccessException e) {
-          e.printStackTrace();
-        } catch (InvocationTargetException e) {
-          e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-          e.printStackTrace();
-        }
-
-        return null;
+        return new QuadTree<QuadNodeElementType>(QuadTree.this);
       }
     };
   }

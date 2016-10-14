@@ -21,7 +21,7 @@ public class EatTask extends EntityTask {
   private Array<Entity> consumableEntities        = new Array<Entity>();
   private Rectangle tile                          = new Rectangle(0,0, 1,1);
   private Entity consumableEntity;
-
+  private final static Family consumableFamily    = Family.all(ConsumableComponent.class).get();
   @Override
   public void start() {
     super.start();
@@ -29,7 +29,7 @@ public class EatTask extends EntityTask {
     consumableEntities.clear();
 
     tile.setPosition(Components.Target.get(getObject()));
-    getTree().getElements(consumableEntities, tile);
+    getTree().getElements(consumableEntities, tile, consumableFamily);
 
     consumableEntity = consumableEntities.get(0);
   }
@@ -41,7 +41,7 @@ public class EatTask extends EntityTask {
     if (consumableEntity != null) {
       if (accumulator > 50) {
         Gdx.app.log(TAG, "Munch munch im eating");
-        programmer.hunger = 0;
+        programmer.hunger -= 60;
         getEntities().removeEntity(consumableEntity);
         return Status.SUCCEEDED;
       } else {
